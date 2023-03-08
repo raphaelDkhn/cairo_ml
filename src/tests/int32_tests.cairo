@@ -5,8 +5,6 @@ use cairo_ml::math::int32::mul;
 use cairo_ml::math::int32::div_no_rem;
 use cairo_ml::math::int32::div_rem;
 
-use debug::print_felt;
-
 // TODO: write better tests with random numbers.
 
 #[test]

@@ -2,7 +2,6 @@ use array::ArrayTrait;
 
 use cairo_ml::math::int32::i32;
 use cairo_ml::performance::quantizations::quant_vec;
-use debug::print_felt;
 
 impl Arrayi32Drop of Drop::<Array::<i32>>;
 
