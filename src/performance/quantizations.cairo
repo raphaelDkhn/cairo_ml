@@ -13,9 +13,6 @@ use cairo_ml::math::vector::find_min_max;
 
 impl Arrayi32Drop of Drop::<Array::<i32>>;
 
-const q_min: u32 = 0_u32;
-const q_max: u32 = 255_u32;
-
 fn symetric_quant(min_val: i32, max_val: i32, data: i32) -> i32 {
     //  Define quantization range
     //  int8 range : [-127;127] 
