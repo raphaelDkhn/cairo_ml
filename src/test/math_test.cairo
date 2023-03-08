@@ -1,4 +1,4 @@
-use cairo_template::math;
+use cairo_ml::math;
 
 #[test]
 fn test_math() {
