@@ -39,7 +39,6 @@ fn symetric_quant(min_val: i32, max_val: i32, data: i32) -> i32 {
 }
 
 fn quant_vec(ref vec: Array::<i32>) -> Array::<i32> {
-    // Initialize variables.
     let mut result = ArrayTrait::new();
 
     let (mut min_val, mut max_val) = find_min_max(ref vec);
