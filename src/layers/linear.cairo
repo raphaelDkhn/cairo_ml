@@ -14,8 +14,8 @@ fn linear(
     mut bias: Array::<i32>
 ) -> (Array::<i32>) {
     // --- Checks ---
-    assert(weights_shape.num_cols == inputs.len(), 'shape don t match');
-    assert(weights_shape.num_rows == bias.len(), 'shape don t match');
+    assert(weights_shape.num_cols == inputs.len(), 'shape do not match');
+    assert(weights_shape.num_rows == bias.len(), 'shape do not match');
 
     // --- Calculate dot product ---
     let dot_result = matrix_dot_vec(weights, weights_shape, inputs);
