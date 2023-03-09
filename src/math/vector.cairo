@@ -1,10 +1,6 @@
 use array::ArrayTrait;
-
+use cairo_ml::math::int32;
 use cairo_ml::math::int32::i32;
-use cairo_ml::math::int32::add;
-use cairo_ml::math::int32::min;
-use cairo_ml::math::int32::max;
-use cairo_ml::math::int32::not_equal;
 
 impl Arrayi32Drop of Drop::<Array::<i32>>;
 
@@ -45,7 +41,7 @@ fn __sum_two_vec(
     }
 
     // --- Sum and assign the result to the current index ---
-    result.append(add(*vec1.at(n), *vec2.at(n)));
+    result.append(*vec1.at(n) + *vec2.at(n));
 
     // --- The process is repeated for the remaining elemets in the array --- 
     __sum_two_vec(ref vec1, ref vec2, ref result, n + 1_usize);
@@ -67,7 +63,6 @@ fn find_min_max(ref vec: Array::<i32>) -> (i32, i32) {
 }
 
 fn __find_min_max(ref vec: Array::<i32>, ref min_value: i32, ref max_value: i32, n: usize, ) {
-    
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -84,14 +79,14 @@ fn __find_min_max(ref vec: Array::<i32>, ref min_value: i32, ref max_value: i32,
     }
 
     // --- Check the minimum value and update min_value if necessary --- 
-    let check_min = min(min_value, *vec.at(n));
-    if not_equal(min_value, check_min) {
+    let check_min = int32::min(min_value, *vec.at(n));
+    if (min_value != check_min) {
         min_value = check_min;
     }
 
     // --- Check the maximum value and update max_value if necessary --- 
-    let check_max = max(max_value, *vec.at(n));
-    if not_equal(max_value, check_max) {
+    let check_max = int32::max(max_value, *vec.at(n));
+    if (max_value != check_max) {
         max_value = check_max;
     }
 

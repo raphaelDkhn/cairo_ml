@@ -1,7 +1,6 @@
 use array::ArrayTrait;
+use cairo_ml::math::int32;
 use cairo_ml::math::int32::i32;
-use cairo_ml::math::int32::add;
-use cairo_ml::math::int32::mul;
 
 impl Arrayi32Drop of Drop::<Array::<i32>>;
 
@@ -87,10 +86,10 @@ fn row_dot_vec(
 
     // --- Calculates the product ---
     let ele = *matrix.at(matrix_shape.num_cols * row + current_col);
-    let result = mul(ele, *vector.at(current_col));
+    let result = ele * (*vector.at(current_col));
 
     let acc = row_dot_vec(ref matrix, ref matrix_shape, ref vector, row, current_col + 1_usize);
 
     // --- Returns the sum of the current product with the previous ones ---
-    return add(acc, result);
+    return acc + result;
 }

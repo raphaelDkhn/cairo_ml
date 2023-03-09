@@ -3,10 +3,8 @@
 
 use array::ArrayTrait;
 use option::OptionTrait;
+use cairo_ml::math::int32;
 use cairo_ml::math::int32::i32;
-use cairo_ml::math::int32::sub;
-use cairo_ml::math::int32::mul;
-use cairo_ml::math::int32::div_no_rem;
 use cairo_ml::math::int32::max;
 use cairo_ml::math::int32::abs;
 use cairo_ml::math::vector::find_min_max;
@@ -20,18 +18,16 @@ fn symetric_quant(min_val: i32, max_val: i32, data: i32) -> i32 {
     let q_max_int = i32 { inner: 127_u32, sign: false };
 
     let factor = i32 { inner: 1000_u32, sign: false };
-    let min_val = mul(min_val, factor);
-    let max_val = mul(max_val, factor);
+    let min_val = min_val * factor;
+    let max_val = max_val * factor;
 
     //  Calculate the scale based on 8 bit symetric quantization
     //  scale = max(abs(data_range_max), abs(data_range_min)) * 2 / (quantization_range_max - quantization_range_min)
-    let scale = div_no_rem(
-        mul(max(abs(min_val), abs(max_val)), i32 { inner: 2_u32, sign: false }),
-        sub(q_max_int, q_min_int)
-    );
+    let scale = (max(abs(min_val), abs(max_val)) * i32 { inner: 2_u32, sign: false })
+        / (q_max_int - q_min_int);
 
     //  Quantize data based on the scale
-    let quantized_data = div_no_rem(mul(data, factor), scale);
+    let quantized_data = (data * factor) / scale;
 
     assert(quantized_data.inner <= 127_u32, 'out of range');
 
@@ -61,7 +57,7 @@ fn __quant_vec(
             panic(data);
         },
     }
-    
+
     // --- End of the recursion ---
     if n == vec.len() {
         return ();
