@@ -1,14 +1,14 @@
 use array::ArrayTrait;
-use cairo_ml::math::int32;
-use cairo_ml::math::int32::i32;
+use cairo_ml::math::int33;
+use cairo_ml::math::int33::i33;
 
-impl Arrayi32Drop of Drop::<Array::<i32>>;
+impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 //=================================================//
 //=================== SUM VECTORS =================//
 //=================================================//
 
-fn sum_two_vec(vec1: Array::<i32>, vec2: Array::<i32>) -> Array::<i32> {
+fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
     // Initialize variables.
     let mut _vec1 = vec1;
     let mut _vec2 = vec2;
@@ -20,7 +20,7 @@ fn sum_two_vec(vec1: Array::<i32>, vec2: Array::<i32>) -> Array::<i32> {
 }
 
 fn __sum_two_vec(
-    ref vec1: Array::<i32>, ref vec2: Array::<i32>, ref result: Array::<i32>, n: usize, 
+    ref vec1: Array::<i33>, ref vec2: Array::<i33>, ref result: Array::<i33>, n: usize, 
 ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
@@ -52,17 +52,17 @@ fn __sum_two_vec(
 //=================== FIND IN VECTOR ==============//
 //=================================================//
 
-fn find_min_max(ref vec: Array::<i32>) -> (i32, i32) {
+fn find_min_max(ref vec: Array::<i33>) -> (i33, i33) {
     // Initialize variables.
-    let mut min_value = i32 { inner: 65535_u32, sign: false };
-    let mut max_value = i32 { inner: 65535_u32, sign: true };
+    let mut min_value = i33 { inner: 65535_u32, sign: false };
+    let mut max_value = i33 { inner: 65535_u32, sign: true };
 
     __find_min_max(ref vec, ref min_value, ref max_value, 0_usize, );
 
     return (min_value, max_value);
 }
 
-fn __find_min_max(ref vec: Array::<i32>, ref min_value: i32, ref max_value: i32, n: usize, ) {
+fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33, n: usize, ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -79,13 +79,13 @@ fn __find_min_max(ref vec: Array::<i32>, ref min_value: i32, ref max_value: i32,
     }
 
     // --- Check the minimum value and update min_value if necessary --- 
-    let check_min = int32::min(min_value, *vec.at(n));
+    let check_min = int33::min(min_value, *vec.at(n));
     if (min_value != check_min) {
         min_value = check_min;
     }
 
     // --- Check the maximum value and update max_value if necessary --- 
-    let check_max = int32::max(max_value, *vec.at(n));
+    let check_max = int33::max(max_value, *vec.at(n));
     if (max_value != check_max) {
         max_value = check_max;
     }

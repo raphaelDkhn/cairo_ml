@@ -1,8 +1,8 @@
 use array::ArrayTrait;
-use cairo_ml::math::int32;
-use cairo_ml::math::int32::i32;
+use cairo_ml::math::int33;
+use cairo_ml::math::int33::i33;
 
-impl Arrayi32Drop of Drop::<Array::<i32>>;
+impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 //=================================================//
 //================ MATRIX DOT VECTORS =============//
@@ -15,8 +15,8 @@ struct MatrixShape {
 }
 
 fn matrix_dot_vec(
-    matrix_data: Array::<i32>, matrix_shape: MatrixShape, vector: Array::<i32>
-) -> (Array::<i32>) {
+    matrix_data: Array::<i33>, matrix_shape: MatrixShape, vector: Array::<i33>
+) -> (Array::<i33>) {
     // Initialize variables.
     let mut _matrix_data = matrix_data;
     let mut _matrix_shape = matrix_shape;
@@ -29,10 +29,10 @@ fn matrix_dot_vec(
 }
 
 fn __matrix_dot_vec(
-    ref matrix_data: Array::<i32>,
+    ref matrix_data: Array::<i33>,
     ref matrix_shape: MatrixShape,
-    ref vector: Array::<i32>,
-    ref result_vec: Array::<i32>,
+    ref vector: Array::<i33>,
+    ref result_vec: Array::<i33>,
     row: usize
 ) {
     // --- Check if out of gas ---
@@ -62,12 +62,12 @@ fn __matrix_dot_vec(
 }
 
 fn row_dot_vec(
-    ref matrix: Array::<i32>,
+    ref matrix: Array::<i33>,
     ref matrix_shape: MatrixShape,
-    ref vector: Array::<i32>,
+    ref vector: Array::<i33>,
     row: usize,
     current_col: usize
-) -> i32 {
+) -> i33 {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -81,7 +81,7 @@ fn row_dot_vec(
 
     // --- End of the recursion ---
     if (current_col == matrix_shape.num_cols) {
-        return (i32 { inner: 0_u32, sign: true });
+        return (i33 { inner: 0_u32, sign: true });
     }
 
     // --- Calculates the product ---

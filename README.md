@@ -4,7 +4,7 @@ Build neural network models in Cairo 1.0 to perform inference.
 
 ---
 
-The calculations are performed using `i32` values, and the outcomes are quantized into 8 bits based on the [ONNX standard for symmetric quantization](https://onnxruntime.ai/docs/performance/quantization.html#quantization-overview).
+The calculations are performed using `i33` values, and the outcomes are quantized into 8 bits based on the [ONNX standard for symmetric quantization](https://onnxruntime.ai/docs/performance/quantization.html#quantization-overview).
 
 ## Installation
 
