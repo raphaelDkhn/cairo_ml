@@ -1,20 +1,20 @@
 use array::ArrayTrait;
 
-use cairo_ml::math::int32::i32;
+use cairo_ml::math::int33::i33;
 use cairo_ml::performance::quantizations::quant_vec;
 
-impl Arrayi32Drop of Drop::<Array::<i32>>;
+impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 #[test]
 #[available_gas(2000000)]
 fn quant_vec_test() {
     let mut vec = ArrayTrait::new();
-    vec.append(i32 { inner: 30523_u32, sign: true });
-    vec.append(i32 { inner: 24327_u32, sign: false });
-    vec.append(i32 { inner: 12288_u32, sign: true });
-    vec.append(i32 { inner: 29837_u32, sign: false });
-    vec.append(i32 { inner: 19345_u32, sign: true });
-    vec.append(i32 { inner: 15416_u32, sign: false });
+    vec.append(i33 { inner: 30523_u32, sign: true });
+    vec.append(i33 { inner: 24327_u32, sign: false });
+    vec.append(i33 { inner: 12288_u32, sign: true });
+    vec.append(i33 { inner: 29837_u32, sign: false });
+    vec.append(i33 { inner: 19345_u32, sign: true });
+    vec.append(i33 { inner: 15416_u32, sign: false });
 
     let mut res = quant_vec(ref vec);
 

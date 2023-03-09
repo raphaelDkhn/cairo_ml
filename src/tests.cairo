@@ -1,4 +1,4 @@
-mod int32_tests;
+mod int33_tests;
 mod vector_tests;
 mod matrix_tests;
 mod quantizations_tests;
