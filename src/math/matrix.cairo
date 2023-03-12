@@ -99,7 +99,10 @@ fn row_dot_vec(
 //=================================================//
 
 fn slice_matrix(
-    matrix_shape: MatrixShape, slicer_shape: MatrixShape, matrix_data: Array::<i33>
+    matrix_shape: MatrixShape,
+    slicer_shape: MatrixShape,
+    matrix_data: Array::<i33>,
+    start_index: usize,
 ) -> Array::<i33> {
     assert(
         matrix_shape.num_rows > slicer_shape.num_rows | matrix_shape.num_cols > slicer_shape.num_cols,
@@ -109,9 +112,10 @@ fn slice_matrix(
     // Initialize variables.
     let mut _matrix_data = matrix_data;
     let mut result = ArrayTrait::new();
-
     let row_ratio = matrix_shape.num_rows / slicer_shape.num_rows;
     let col_ratio = matrix_shape.num_cols / slicer_shape.num_cols;
+    // let row_index = start_index / slicer_shape.num_cols;
+    // let col_index = start_index % slicer_shape.num_cols;
 
     __slice_matrix(
         0_usize, // current_row
@@ -120,6 +124,7 @@ fn slice_matrix(
         slicer_shape,
         row_ratio,
         col_ratio,
+        start_index,
         ref _matrix_data,
         ref result
     );
@@ -134,6 +139,7 @@ fn __slice_matrix(
     slicer_shape: MatrixShape,
     row_ratio: usize,
     col_ratio: usize,
+    start_index: usize,
     ref matrix_data: Array::<i33>,
     ref result: Array::<i33>
 ) {
@@ -163,12 +169,15 @@ fn __slice_matrix(
             slicer_shape,
             row_ratio,
             col_ratio,
+            start_index,
             ref matrix_data,
             ref result
         );
     } else {
         // --- Find the index ---
-        let index = (current_row * row_ratio * matrix_shape.num_cols) + (current_col * col_ratio);
+        let index = start_index
+            + (current_row * row_ratio * matrix_shape.num_cols)
+            + (current_col * col_ratio);
 
         // --- Append the value at the index to the new matrix ---
         result.append(*matrix_data.at(index));
@@ -181,6 +190,7 @@ fn __slice_matrix(
             slicer_shape,
             row_ratio,
             col_ratio,
+            start_index,
             ref matrix_data,
             ref result
         );
