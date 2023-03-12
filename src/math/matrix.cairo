@@ -93,3 +93,97 @@ fn row_dot_vec(
     // --- Returns the sum of the current product with the previous ones ---
     return acc + result;
 }
+
+//=================================================//
+//=================== SLICE MATRIX ================//
+//=================================================//
+
+fn slice_matrix(
+    matrix_shape: MatrixShape, slicer_shape: MatrixShape, matrix_data: Array::<i33>
+) -> Array::<i33> {
+    assert(
+        matrix_shape.num_rows > slicer_shape.num_rows | matrix_shape.num_cols > slicer_shape.num_cols,
+        'out of matrix bounds'
+    );
+
+    // Initialize variables.
+    let mut _matrix_data = matrix_data;
+    let mut result = ArrayTrait::new();
+
+    let row_ratio = matrix_shape.num_rows / slicer_shape.num_rows;
+    let col_ratio = matrix_shape.num_cols / slicer_shape.num_cols;
+
+    __slice_matrix(
+        0_usize, // current_row
+        0_usize, // current_col
+        matrix_shape,
+        slicer_shape,
+        row_ratio,
+        col_ratio,
+        ref _matrix_data,
+        ref result
+    );
+
+    return result;
+}
+
+fn __slice_matrix(
+    current_row: usize,
+    current_col: usize,
+    matrix_shape: MatrixShape,
+    slicer_shape: MatrixShape,
+    row_ratio: usize,
+    col_ratio: usize,
+    ref matrix_data: Array::<i33>,
+    ref result: Array::<i33>
+) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if (current_row == slicer_shape.num_rows) {
+        return ();
+    }
+
+    // --- If we reach the limit of columns --- 
+    if (current_col == slicer_shape.num_cols) {
+        // --- The process is repeated for the remaining rows --- 
+        __slice_matrix(
+            current_row + 1_usize, // current_row
+            0_usize, // current_col
+            matrix_shape,
+            slicer_shape,
+            row_ratio,
+            col_ratio,
+            ref matrix_data,
+            ref result
+        );
+    } else {
+        // --- Find the index ---
+        let index = (current_row * row_ratio * matrix_shape.num_cols) + (current_col * col_ratio);
+
+        // --- Append the value at the index to the new matrix ---
+        result.append(*matrix_data.at(index));
+
+        // --- The process is repeated for the remaining cols --- 
+        __slice_matrix(
+            current_row, // current_row
+            current_col + 1_usize, // current_col
+            matrix_shape,
+            slicer_shape,
+            row_ratio,
+            col_ratio,
+            ref matrix_data,
+            ref result
+        );
+    }
+}
+
