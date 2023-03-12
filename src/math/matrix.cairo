@@ -81,7 +81,7 @@ fn row_dot_vec(
 
     // --- End of the recursion ---
     if (current_col == matrix_shape.num_cols) {
-        return (i33 { inner: 0_u32, sign: true });
+        return (i33 { inner: 0_u32, sign: false });
     }
 
     // --- Calculates the product ---

@@ -9,6 +9,8 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 //=================================================//
 
 fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
+
     // Initialize variables.
     let mut _vec1 = vec1;
     let mut _vec2 = vec2;
@@ -33,8 +35,6 @@ fn __sum_two_vec(
         },
     }
 
-    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
-
     // --- End of the recursion ---
     if n == vec1.len() {
         return ();
@@ -47,6 +47,47 @@ fn __sum_two_vec(
     __sum_two_vec(ref vec1, ref vec2, ref result, n + 1_usize);
 }
 
+//=================================================//
+//=================== DOT VECTORS =================//
+//=================================================//
+
+fn vec_dot_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> i33 {
+    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
+
+    // Initialize variables.
+    let mut _vec1 = vec1;
+    let mut _vec2 = vec2;
+    let result = __vec_dot_vec(ref _vec1, ref _vec2, 0_usize);
+
+    return result;
+}
+
+fn __vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>, n: usize) -> i33 {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if (n == vec1.len()) {
+        return (i33 { inner: 0_u32, sign: false });
+    }
+
+    // --- Calculates the product ---
+    let ele = *vec1.at(n);
+    let result = ele * (*vec2.at(n));
+
+    let acc = __vec_dot_vec(ref vec1, ref vec2, n + 1_usize);
+
+    // --- Returns the sum of the current product with the previous ones ---
+    return acc + result;
+}
 
 //=================================================//
 //=================== FIND IN VECTOR ==============//

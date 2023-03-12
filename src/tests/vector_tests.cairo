@@ -1,6 +1,7 @@
 use array::ArrayTrait;
 use option::OptionTrait;
 use cairo_ml::math::vector::sum_two_vec;
+use cairo_ml::math::vector::vec_dot_vec;
 use cairo_ml::math::vector::find_min_max;
 use cairo_ml::math::int33::i33;
 
@@ -67,6 +68,27 @@ fn sum_test() {
     assert(*result.at(1_usize).sign == true, 'result[1] == -47768');
     assert(*result.at(2_usize).inner == 16384_u32, 'result[2] == 16384');
     assert(*result.at(2_usize).sign == false, 'result[2] == 16384');
+}
+
+#[test]
+#[available_gas(2000000)]
+fn vec_dot_vec_test() {
+    let mut vec1 = ArrayTrait::new();
+    vec1.append(i33 { inner: 1_u32, sign: false });
+    vec1.append(i33 { inner: 6_u32, sign: false });
+    vec1.append(i33 { inner: 5_u32, sign: false });
+    vec1.append(i33 { inner: 3_u32, sign: false });
+
+    let mut vec2 = ArrayTrait::new();
+    vec2.append(i33 { inner: 1_u32, sign: false });
+    vec2.append(i33 { inner: 2_u32, sign: false });
+    vec2.append(i33 { inner: 1_u32, sign: true });
+    vec2.append(i33 { inner: 0_u32, sign: false });
+
+    let mut result = vec_dot_vec(vec1, vec2);
+
+    assert(result.inner == 8_u32, 'result == 0');
+    assert(result.sign == false, 'result -> positive');
 }
 
 #[test]
