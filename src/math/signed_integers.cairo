@@ -1,5 +1,8 @@
 // Signed integers : i9, i17, i33, i65, i129
 
+use traits::Into;
+use debug::print_felt;
+
 // ====================== INT 9 ======================
 
 // i9 represents a 9-bit integer.
@@ -31,10 +34,14 @@ fn i9_check_sign_zero(x: i9) {
 fn i9_add(a: i9, b: i9) -> i9 {
     i9_check_sign_zero(a);
     i9_check_sign_zero(b);
+
     // If both integers have the same sign, 
     // the sum of their absolute values can be returned.
     if a.sign == b.sign {
         let sum = a.inner + b.inner;
+        if (sum == 0_u8) {
+            return i9 { inner: sum, sign: false };
+        }
         return i9 { inner: sum, sign: a.sign };
     } else {
         // If the integers have different signs, 
@@ -46,6 +53,9 @@ fn i9_add(a: i9, b: i9) -> i9 {
         };
         let difference = larger.inner - smaller.inner;
 
+        if (difference == 0_u8) {
+            return i9 { inner: difference, sign: false };
+        }
         return i9 { inner: difference, sign: larger.sign };
     }
 }
@@ -117,6 +127,11 @@ fn i9_mul(a: i9, b: i9) -> i9 {
     let sign = a.sign ^ b.sign;
     // The product is the product of the absolute values of the operands.
     let inner = a.inner * b.inner;
+
+    if (inner == 0_u8) {
+        return i9 { inner: inner, sign: false };
+    }
+
     return i9 { inner, sign };
 }
 
@@ -157,12 +172,20 @@ fn i9_div(a: i9, b: i9) -> i9 {
     // If the operands have different signs, rounding is necessary.
     // First, check if the quotient is an integer.
     if (a.inner % b.inner == 0_u8) {
-        return i9 { inner: a.inner / b.inner, sign: sign };
+        let quotient = a.inner / b.inner;
+        if (quotient == 0_u8) {
+            return i9 { inner: quotient, sign: false };
+        }
+        return i9 { inner: quotient, sign: sign };
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
     let quotient = (a.inner * 10_u8) / b.inner;
     let last_digit = quotient % 10_u8;
+
+    if (quotient == 0_u8) {
+        return i9 { inner: quotient, sign: false };
+    }
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u8) {
@@ -430,10 +453,14 @@ fn i17_check_sign_zero(x: i17) {
 fn i17_add(a: i17, b: i17) -> i17 {
     i17_check_sign_zero(a);
     i17_check_sign_zero(b);
+
     // If both integers have the same sign, 
     // the sum of their absolute values can be returned.
     if a.sign == b.sign {
         let sum = a.inner + b.inner;
+        if (sum == 0_u16) {
+            return i17 { inner: sum, sign: false };
+        }
         return i17 { inner: sum, sign: a.sign };
     } else {
         // If the integers have different signs, 
@@ -445,6 +472,9 @@ fn i17_add(a: i17, b: i17) -> i17 {
         };
         let difference = larger.inner - smaller.inner;
 
+        if (difference == 0_u16) {
+            return i17 { inner: difference, sign: false };
+        }
         return i17 { inner: difference, sign: larger.sign };
     }
 }
@@ -516,6 +546,11 @@ fn i17_mul(a: i17, b: i17) -> i17 {
     let sign = a.sign ^ b.sign;
     // The product is the product of the absolute values of the operands.
     let inner = a.inner * b.inner;
+
+    if (inner == 0_u16) {
+        return i17 { inner: inner, sign: false };
+    }
+
     return i17 { inner, sign };
 }
 
@@ -556,12 +591,20 @@ fn i17_div(a: i17, b: i17) -> i17 {
     // If the operands have different signs, rounding is necessary.
     // First, check if the quotient is an integer.
     if (a.inner % b.inner == 0_u16) {
-        return i17 { inner: a.inner / b.inner, sign: sign };
+        let quotient = a.inner / b.inner;
+        if (quotient == 0_u16) {
+            return i17 { inner: quotient, sign: false };
+        }
+        return i17 { inner: quotient, sign: sign };
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
     let quotient = (a.inner * 10_u16) / b.inner;
     let last_digit = quotient % 10_u16;
+
+    if (quotient == 0_u16) {
+        return i17 { inner: quotient, sign: false };
+    }
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u16) {
@@ -798,6 +841,7 @@ fn i17_min(a: i17, b: i17) -> i17 {
     }
 }
 
+
 // ====================== INT 33 ======================
 
 // i33 represents a 33-bit integer.
@@ -829,10 +873,14 @@ fn i33_check_sign_zero(x: i33) {
 fn i33_add(a: i33, b: i33) -> i33 {
     i33_check_sign_zero(a);
     i33_check_sign_zero(b);
+
     // If both integers have the same sign, 
     // the sum of their absolute values can be returned.
     if a.sign == b.sign {
         let sum = a.inner + b.inner;
+        if (sum == 0_u32) {
+            return i33 { inner: sum, sign: false };
+        }
         return i33 { inner: sum, sign: a.sign };
     } else {
         // If the integers have different signs, 
@@ -844,6 +892,9 @@ fn i33_add(a: i33, b: i33) -> i33 {
         };
         let difference = larger.inner - smaller.inner;
 
+        if (difference == 0_u32) {
+            return i33 { inner: difference, sign: false };
+        }
         return i33 { inner: difference, sign: larger.sign };
     }
 }
@@ -915,6 +966,11 @@ fn i33_mul(a: i33, b: i33) -> i33 {
     let sign = a.sign ^ b.sign;
     // The product is the product of the absolute values of the operands.
     let inner = a.inner * b.inner;
+
+    if (inner == 0_u32) {
+        return i33 { inner: inner, sign: false };
+    }
+
     return i33 { inner, sign };
 }
 
@@ -955,12 +1011,20 @@ fn i33_div(a: i33, b: i33) -> i33 {
     // If the operands have different signs, rounding is necessary.
     // First, check if the quotient is an integer.
     if (a.inner % b.inner == 0_u32) {
-        return i33 { inner: a.inner / b.inner, sign: sign };
+        let quotient = a.inner / b.inner;
+        if (quotient == 0_u32) {
+            return i33 { inner: quotient, sign: false };
+        }
+        return i33 { inner: quotient, sign: sign };
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
     let quotient = (a.inner * 10_u32) / b.inner;
     let last_digit = quotient % 10_u32;
+
+    if (quotient == 0_u32) {
+        return i33 { inner: quotient, sign: false };
+    }
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u32) {
@@ -1228,10 +1292,14 @@ fn i65_check_sign_zero(x: i65) {
 fn i65_add(a: i65, b: i65) -> i65 {
     i65_check_sign_zero(a);
     i65_check_sign_zero(b);
+
     // If both integers have the same sign, 
     // the sum of their absolute values can be returned.
     if a.sign == b.sign {
         let sum = a.inner + b.inner;
+        if (sum == 0_u64) {
+            return i65 { inner: sum, sign: false };
+        }
         return i65 { inner: sum, sign: a.sign };
     } else {
         // If the integers have different signs, 
@@ -1243,6 +1311,9 @@ fn i65_add(a: i65, b: i65) -> i65 {
         };
         let difference = larger.inner - smaller.inner;
 
+        if (difference == 0_u64) {
+            return i65 { inner: difference, sign: false };
+        }
         return i65 { inner: difference, sign: larger.sign };
     }
 }
@@ -1314,6 +1385,11 @@ fn i65_mul(a: i65, b: i65) -> i65 {
     let sign = a.sign ^ b.sign;
     // The product is the product of the absolute values of the operands.
     let inner = a.inner * b.inner;
+
+    if (inner == 0_u64) {
+        return i65 { inner: inner, sign: false };
+    }
+
     return i65 { inner, sign };
 }
 
@@ -1354,12 +1430,20 @@ fn i65_div(a: i65, b: i65) -> i65 {
     // If the operands have different signs, rounding is necessary.
     // First, check if the quotient is an integer.
     if (a.inner % b.inner == 0_u64) {
-        return i65 { inner: a.inner / b.inner, sign: sign };
+        let quotient = a.inner / b.inner;
+        if (quotient == 0_u64) {
+            return i65 { inner: quotient, sign: false };
+        }
+        return i65 { inner: quotient, sign: sign };
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
     let quotient = (a.inner * 10_u64) / b.inner;
     let last_digit = quotient % 10_u64;
+
+    if (quotient == 0_u64) {
+        return i65 { inner: quotient, sign: false };
+    }
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u64) {
@@ -1596,6 +1680,7 @@ fn i65_min(a: i65, b: i65) -> i65 {
     }
 }
 
+
 // ====================== INT 129 ======================
 
 // i129 represents a 129-bit integer.
@@ -1627,10 +1712,14 @@ fn i129_check_sign_zero(x: i129) {
 fn i129_add(a: i129, b: i129) -> i129 {
     i129_check_sign_zero(a);
     i129_check_sign_zero(b);
+
     // If both integers have the same sign, 
     // the sum of their absolute values can be returned.
     if a.sign == b.sign {
         let sum = a.inner + b.inner;
+        if (sum == 0_u128) {
+            return i129 { inner: sum, sign: false };
+        }
         return i129 { inner: sum, sign: a.sign };
     } else {
         // If the integers have different signs, 
@@ -1642,6 +1731,9 @@ fn i129_add(a: i129, b: i129) -> i129 {
         };
         let difference = larger.inner - smaller.inner;
 
+        if (difference == 0_u128) {
+            return i129 { inner: difference, sign: false };
+        }
         return i129 { inner: difference, sign: larger.sign };
     }
 }
@@ -1713,6 +1805,11 @@ fn i129_mul(a: i129, b: i129) -> i129 {
     let sign = a.sign ^ b.sign;
     // The product is the product of the absolute values of the operands.
     let inner = a.inner * b.inner;
+
+    if (inner == 0_u128) {
+        return i129 { inner: inner, sign: false };
+    }
+
     return i129 { inner, sign };
 }
 
@@ -1753,12 +1850,20 @@ fn i129_div(a: i129, b: i129) -> i129 {
     // If the operands have different signs, rounding is necessary.
     // First, check if the quotient is an integer.
     if (a.inner % b.inner == 0_u128) {
-        return i129 { inner: a.inner / b.inner, sign: sign };
+        let quotient = a.inner / b.inner;
+        if (quotient == 0_u128) {
+            return i129 { inner: quotient, sign: false };
+        }
+        return i129 { inner: quotient, sign: sign };
     }
 
     // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
     let quotient = (a.inner * 10_u128) / b.inner;
     let last_digit = quotient % 10_u128;
+
+    if (quotient == 0_u128) {
+        return i129 { inner: quotient, sign: false };
+    }
 
     // Check the last digit to determine rounding direction.
     if (last_digit <= 5_u128) {

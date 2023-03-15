@@ -1,5 +1,4 @@
 use array::ArrayTrait;
-use option::OptionTrait;
 use cairo_ml::math::vector::sum_two_vec;
 use cairo_ml::math::vector::vec_dot_vec;
 use cairo_ml::math::vector::find_min_max;
@@ -85,7 +84,7 @@ fn vec_dot_vec_test() {
     vec2.append(i33 { inner: 1_u32, sign: true });
     vec2.append(i33 { inner: 0_u32, sign: false });
 
-    let mut result = vec_dot_vec(vec1, vec2);
+    let mut result = vec_dot_vec(ref vec1, ref vec2);
 
     assert(result.inner == 8_u32, 'result == 0');
     assert(result.sign == false, 'result -> positive');

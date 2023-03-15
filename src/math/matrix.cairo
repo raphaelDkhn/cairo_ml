@@ -100,18 +100,19 @@ fn row_dot_vec(
 //=================================================//
 
 fn slice_matrix(
-    matrix: Array::<i33>, matrix_shape: MatrixShape, slicer_shape: MatrixShape, start_index: usize, 
+    ref matrix: Array::<i33>,
+    matrix_shape: MatrixShape,
+    slicer_shape: MatrixShape,
+    start_index: usize,
 ) -> Array::<i33> {
-
     let rows = matrix_shape.num_rows;
     let cols = matrix_shape.num_cols;
     let start_row = start_index / cols;
     let start_col = start_index % cols;
     let end_row = start_row + slicer_shape.num_rows;
     let end_col = start_col + slicer_shape.num_cols;
-    let mut _matrix = matrix;
 
-    return __slice_matrix(ref _matrix, rows, cols, start_row, start_col, end_row, end_col);
+    return __slice_matrix(ref matrix, rows, cols, start_row, start_col, end_row, end_col);
 }
 
 fn __slice_matrix(
@@ -123,7 +124,6 @@ fn __slice_matrix(
     end_row: usize,
     end_col: usize
 ) -> Array::<i33> {
-
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -138,6 +138,7 @@ fn __slice_matrix(
     let row_start = start_row * cols;
     let row_end = row_start + cols;
 
+    // --- End of the recursion ---
     if (end_row == start_row
         + 1_usize) {
             return slice_vec(ref matrix, row_start + start_col, row_start + end_col);

@@ -53,13 +53,11 @@ fn __sum_two_vec(
 //=================== DOT VECTORS =================//
 //=================================================//
 
-fn vec_dot_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> i33 {
+fn vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>) -> i33 {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let mut _vec1 = vec1;
-    let mut _vec2 = vec2;
-    let result = __vec_dot_vec(ref _vec1, ref _vec2, 0_usize);
+    let result = __vec_dot_vec(ref vec1, ref vec2, 0_usize);
 
     return result;
 }

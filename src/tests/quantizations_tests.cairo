@@ -1,5 +1,4 @@
 use array::ArrayTrait;
-
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::performance::quantizations::quant_vec;
 

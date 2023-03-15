@@ -1,12 +1,8 @@
 use array::ArrayTrait;
-
 use cairo_ml::math::matrix::matrix_dot_vec;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::matrix::MatrixShape;
 use cairo_ml::math::signed_integers::i33;
-
-use traits::Into;
-use debug::print_felt;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -54,7 +50,7 @@ fn slice_matrix_test() {
 
     let shape = MatrixShape { num_rows: 3_usize, num_cols: 3_usize };
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
-    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
+    let mut result = slice_matrix(ref matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -73,7 +69,7 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 9_u32, sign: false });
 
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 3_usize };
-    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
+    let mut result = slice_matrix(ref matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -94,7 +90,7 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 9_u32, sign: false });
 
     let slicer_shape = MatrixShape { num_rows: 3_usize, num_cols: 2_usize };
-    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
+    let mut result = slice_matrix(ref matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -117,7 +113,7 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 9_u32, sign: false });
 
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
-    let mut result = slice_matrix(matrix, shape, slicer_shape, 1_usize);
+    let mut result = slice_matrix(ref matrix, shape, slicer_shape, 1_usize);
 
     assert(*result.at(0_usize).inner == 2_u32, 'result[0] == 2');
     assert(*result.at(1_usize).inner == 3_u32, 'result[1] == 3');
@@ -146,7 +142,7 @@ fn slice_matrix_test() {
 
     let shape = MatrixShape { num_rows: 4_usize, num_cols: 4_usize };
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
-    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
+    let mut result = slice_matrix(ref matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');

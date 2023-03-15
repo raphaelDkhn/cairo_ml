@@ -1,5 +1,4 @@
 use array::ArrayTrait;
-
 use cairo_ml::layers::linear;
 use cairo_ml::math::matrix::MatrixShape;
 use cairo_ml::math::signed_integers::i33;
