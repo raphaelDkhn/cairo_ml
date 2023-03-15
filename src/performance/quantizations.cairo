@@ -3,10 +3,10 @@
 
 use array::ArrayTrait;
 use option::OptionTrait;
-use cairo_ml::math::int33;
-use cairo_ml::math::int33::i33;
-use cairo_ml::math::int33::max;
-use cairo_ml::math::int33::abs;
+use cairo_ml::math::signed_integers;
+use cairo_ml::math::signed_integers::i33;
+use cairo_ml::math::signed_integers::i33_max;
+use cairo_ml::math::signed_integers::i33_abs;
 use cairo_ml::math::vector::find_min_max;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
@@ -23,7 +23,7 @@ fn symetric_quant(min_val: i33, max_val: i33, data: i33) -> i33 {
 
     //  Calculate the scale based on 8 bit symetric quantization
     //  scale = max(abs(data_range_max), abs(data_range_min)) * 2 / (quantization_range_max - quantization_range_min)
-    let scale = (max(abs(min_val), abs(max_val)) * i33 { inner: 2_u32, sign: false })
+    let scale = (i33_max(i33_abs(min_val), i33_abs(max_val)) * i33 { inner: 2_u32, sign: false })
         / (q_max_int - q_min_int);
 
     //  Quantize data based on the scale

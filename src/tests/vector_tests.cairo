@@ -3,7 +3,7 @@ use option::OptionTrait;
 use cairo_ml::math::vector::sum_two_vec;
 use cairo_ml::math::vector::vec_dot_vec;
 use cairo_ml::math::vector::find_min_max;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers::i33;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 

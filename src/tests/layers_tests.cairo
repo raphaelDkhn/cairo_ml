@@ -2,7 +2,7 @@ use array::ArrayTrait;
 
 use cairo_ml::layers::linear;
 use cairo_ml::math::matrix::MatrixShape;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers::i33;
 
 #[test]
 #[available_gas(2000000)]

@@ -1,6 +1,6 @@
 use array::ArrayTrait;
-use cairo_ml::math::int33;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers;
+use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::vector::slice_vec;
 use cairo_ml::math::vector::concat_vectors;
 

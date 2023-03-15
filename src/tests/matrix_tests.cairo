@@ -3,7 +3,7 @@ use array::ArrayTrait;
 use cairo_ml::math::matrix::matrix_dot_vec;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::matrix::MatrixShape;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers::i33;
 
 use traits::Into;
 use debug::print_felt;

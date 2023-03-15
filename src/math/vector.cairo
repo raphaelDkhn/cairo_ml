@@ -1,6 +1,8 @@
 use array::ArrayTrait;
-use cairo_ml::math::int33;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers;
+use cairo_ml::math::signed_integers::i33_min;
+use cairo_ml::math::signed_integers::i33_max;
+use cairo_ml::math::signed_integers::i33;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -120,13 +122,13 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
     }
 
     // --- Check the minimum value and update min_value if necessary --- 
-    let check_min = int33::min(min_value, *vec.at(n));
+    let check_min = i33_min(min_value, *vec.at(n));
     if (min_value != check_min) {
         min_value = check_min;
     }
 
     // --- Check the maximum value and update max_value if necessary --- 
-    let check_max = int33::max(max_value, *vec.at(n));
+    let check_max = i33_max(max_value, *vec.at(n));
     if (max_value != check_max) {
         max_value = check_max;
     }

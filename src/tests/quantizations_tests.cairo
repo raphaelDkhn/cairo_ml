@@ -1,6 +1,6 @@
 use array::ArrayTrait;
 
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers::i33;
 use cairo_ml::performance::quantizations::quant_vec;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
