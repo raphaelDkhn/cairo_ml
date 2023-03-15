@@ -15,24 +15,24 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // =================================================//
 
 fn valid_correlate_2d(
-    matrix: Array::<i33>, matrix_shape: MatrixShape, kernel: Array::<i33>, kernel_shape: MatrixShape
+    input: Array::<i33>, input_shape: MatrixShape, kernel: Array::<i33>, kernel_shape: MatrixShape
 ) -> Array::<i33> {
     // Initialize variables.
-    let mut _matrix = matrix;
+    let mut _input = input;
     let mut _kernel = kernel;
     let mut result = ArrayTrait::new();
     let max_index = 0_usize
-        + (kernel_shape.num_rows * matrix_shape.num_cols)
+        + (kernel_shape.num_rows * input_shape.num_cols)
         + kernel_shape.num_cols
         - 2_usize;
 
     __valid_correlate_2d(
-        matrix_shape, kernel_shape, ref _matrix, ref _kernel, ref result, 0_usize, max_index
+        input_shape, kernel_shape, ref _input, ref _kernel, ref result, 0_usize, max_index
     );
 
     assert(
-        result.len() == (matrix_shape.num_rows - kernel_shape.num_rows + 1_usize)
-            * (matrix_shape.num_cols - kernel_shape.num_cols + 1_usize),
+        result.len() == (input_shape.num_rows - kernel_shape.num_rows + 1_usize)
+            * (input_shape.num_cols - kernel_shape.num_cols + 1_usize),
         'wrong output shape'
     );
 
@@ -40,9 +40,9 @@ fn valid_correlate_2d(
 }
 
 fn __valid_correlate_2d(
-    matrix_shape: MatrixShape,
+    input_shape: MatrixShape,
     kernel_shape: MatrixShape,
-    ref matrix: Array::<i33>,
+    ref input: Array::<i33>,
     ref kernel: Array::<i33>,
     ref result: Array::<i33>,
     n: usize,
@@ -59,29 +59,29 @@ fn __valid_correlate_2d(
         },
     }
 
-    let col_index = n % matrix_shape.num_cols;
+    let col_index = n % input_shape.num_cols;
 
     // --- End of the recursion ---
     if (n >= max_index) {
         return ();
     }
 
-    // --- Slice Matrix ---
-    let mut sliced_matrix = slice_matrix(ref matrix, matrix_shape, kernel_shape, n);
+    // --- Slice Input ---
+    let mut sliced_input = slice_matrix(ref input, input_shape, kernel_shape, n);
 
     // --- Dot product ---
-    let dot = vec_dot_vec(ref sliced_matrix, ref kernel);
+    let dot = vec_dot_vec(ref sliced_input, ref kernel);
 
     // --- Append the dot product to the result array ---
     result.append(dot);
 
-    let col_index = n % matrix_shape.num_cols;
-    if (col_index == matrix_shape.num_cols
+    let col_index = n % input_shape.num_cols;
+    if (col_index == input_shape.num_cols
         - kernel_shape.num_cols) {
             __valid_correlate_2d(
-                matrix_shape,
+                input_shape,
                 kernel_shape,
-                ref matrix,
+                ref input,
                 ref kernel,
                 ref result,
                 n + kernel_shape.num_cols,
@@ -89,9 +89,9 @@ fn __valid_correlate_2d(
             );
         } else {
             __valid_correlate_2d(
-                matrix_shape,
+                input_shape,
                 kernel_shape,
-                ref matrix,
+                ref input,
                 ref kernel,
                 ref result,
                 n + 1_usize,
