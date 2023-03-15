@@ -1,12 +1,9 @@
 use array::ArrayTrait;
 use cairo_ml::math::signed_integers::i33;
-use cairo_ml::math::matrix::MatrixShape;
-use cairo_ml::math::matrix::__slice_matrix;
+use cairo_ml::math::matrix::Matrix;
+use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::vector::vec_dot_vec;
-
-use traits::Into;
-use debug::print_felt;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -14,39 +11,23 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // ================ CROSS CORELATION ===============//
 // =================================================//
 
-fn valid_correlate_2d(
-    input: Array::<i33>, input_shape: MatrixShape, kernel: Array::<i33>, kernel_shape: MatrixShape
-) -> Array::<i33> {
+fn valid_correlate_2d(input: @Matrix, kernel: @Matrix) -> Matrix {
     // Initialize variables.
-    let mut _input = input;
-    let mut _kernel = kernel;
-    let mut result = ArrayTrait::new();
-    let max_index = 0_usize
-        + (kernel_shape.num_rows * input_shape.num_cols)
-        + kernel_shape.num_cols
-        - 2_usize;
+    let mut output_data = ArrayTrait::new();
+    let max_index = 0_usize + (*kernel.rows * *input.cols) + *kernel.cols - 2_usize;
 
-    __valid_correlate_2d(
-        input_shape, kernel_shape, ref _input, ref _kernel, ref result, 0_usize, max_index
-    );
+    __valid_correlate_2d(input, kernel, ref output_data, 0_usize, max_index);
 
-    assert(
-        result.len() == (input_shape.num_rows - kernel_shape.num_rows + 1_usize)
-            * (input_shape.num_cols - kernel_shape.num_cols + 1_usize),
-        'wrong output shape'
-    );
+    let output_rows = *input.rows - *kernel.rows + 1_usize;
+    let output_cols = *input.cols - *kernel.cols + 1_usize;
 
-    return result;
+    assert(output_data.len() == output_rows * output_cols, 'wrong output shape');
+
+    return matrix_new(output_rows, output_cols, output_data);
 }
 
 fn __valid_correlate_2d(
-    input_shape: MatrixShape,
-    kernel_shape: MatrixShape,
-    ref input: Array::<i33>,
-    ref kernel: Array::<i33>,
-    ref result: Array::<i33>,
-    n: usize,
-    max_index: usize
+    input: @Matrix, kernel: @Matrix, ref output_data: Array::<i33>, n: usize, max_index: usize
 ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
@@ -59,7 +40,7 @@ fn __valid_correlate_2d(
         },
     }
 
-    let col_index = n % input_shape.num_cols;
+    let col_index = n % *input.cols;
 
     // --- End of the recursion ---
     if (n >= max_index) {
@@ -67,35 +48,19 @@ fn __valid_correlate_2d(
     }
 
     // --- Slice Input ---
-    let mut sliced_input = slice_matrix(ref input, input_shape, kernel_shape, n);
+    let mut sliced_input = slice_matrix(input, (*kernel.rows, *kernel.cols), n);
 
     // --- Dot product ---
-    let dot = vec_dot_vec(ref sliced_input, ref kernel);
+    let dot = vec_dot_vec(@sliced_input.data, kernel.data);
 
     // --- Append the dot product to the result array ---
-    result.append(dot);
+    output_data.append(dot);
 
-    let col_index = n % input_shape.num_cols;
-    if (col_index == input_shape.num_cols
-        - kernel_shape.num_cols) {
-            __valid_correlate_2d(
-                input_shape,
-                kernel_shape,
-                ref input,
-                ref kernel,
-                ref result,
-                n + kernel_shape.num_cols,
-                max_index
-            );
+    let col_index = n % *input.cols;
+    if (col_index == *input.cols
+        - *kernel.cols) {
+            __valid_correlate_2d(input, kernel, ref output_data, n + *kernel.cols, max_index);
         } else {
-            __valid_correlate_2d(
-                input_shape,
-                kernel_shape,
-                ref input,
-                ref kernel,
-                ref result,
-                n + 1_usize,
-                max_index
-            );
+            __valid_correlate_2d(input, kernel, ref output_data, n + 1_usize, max_index);
         }
 }
