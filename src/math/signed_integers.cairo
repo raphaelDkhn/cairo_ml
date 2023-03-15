@@ -1,8 +1,5 @@
 // Signed integers : i9, i17, i33, i65, i129
 
-use traits::Into;
-use debug::print_felt;
-
 // ====================== INT 9 ======================
 
 // i9 represents a 9-bit integer.

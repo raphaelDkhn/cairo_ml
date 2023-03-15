@@ -53,16 +53,16 @@ fn __sum_two_vec(
 //=================== DOT VECTORS =================//
 //=================================================//
 
-fn vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>) -> i33 {
+fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let result = __vec_dot_vec(ref vec1, ref vec2, 0_usize);
+    let result = __vec_dot_vec(vec1, vec2, 0_usize);
 
     return result;
 }
 
-fn __vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>, n: usize) -> i33 {
+fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -83,7 +83,7 @@ fn __vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>, n: usize) -> i3
     let ele = *vec1.at(n);
     let result = ele * (*vec2.at(n));
 
-    let acc = __vec_dot_vec(ref vec1, ref vec2, n + 1_usize);
+    let acc = __vec_dot_vec(vec1, vec2, n + 1_usize);
 
     // --- Returns the sum of the current product with the previous ones ---
     return acc + result;
@@ -139,14 +139,14 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
 //=================== SLICE VECTOR ================//
 //=================================================//
 
-fn slice_vec(ref vec: Array::<i33>, start_index: usize, end_index: usize) -> Array::<i33> {
+fn slice_vec(vec: @Array::<i33>, start_index: usize, end_index: usize) -> Array::<i33> {
     let mut result = ArrayTrait::new();
-    __slice_vec(ref vec, end_index, ref result, start_index);
+    __slice_vec(vec, end_index, ref result, start_index);
 
     return result;
 }
 
-fn __slice_vec(ref vec: Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
+fn __slice_vec(vec: @Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -163,7 +163,7 @@ fn __slice_vec(ref vec: Array::<i33>, end_index: usize, ref result: Array::<i33>
     }
 
     result.append(*vec.at(n));
-    __slice_vec(ref vec, end_index, ref result, n + 1_usize);
+    __slice_vec(vec, end_index, ref result, n + 1_usize);
 }
 
 //=================================================//
