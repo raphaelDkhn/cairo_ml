@@ -1,6 +1,8 @@
 use array::ArrayTrait;
 use cairo_ml::math::int33;
 use cairo_ml::math::int33::i33;
+use cairo_ml::math::vector::slice_vec;
+use cairo_ml::math::vector::concat_vectors;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -93,56 +95,35 @@ fn row_dot_vec(
     // --- Returns the sum of the current product with the previous ones ---
     return acc + result;
 }
-
 //=================================================//
 //=================== SLICE MATRIX ================//
 //=================================================//
 
 fn slice_matrix(
-    matrix_shape: MatrixShape,
-    slicer_shape: MatrixShape,
-    matrix_data: Array::<i33>,
-    start_index: usize,
+    matrix: Array::<i33>, matrix_shape: MatrixShape, slicer_shape: MatrixShape, start_index: usize, 
 ) -> Array::<i33> {
-    assert(
-        matrix_shape.num_rows > slicer_shape.num_rows | matrix_shape.num_cols > slicer_shape.num_cols,
-        'out of matrix bounds'
-    );
 
-    // Initialize variables.
-    let mut _matrix_data = matrix_data;
-    let mut result = ArrayTrait::new();
-    let row_ratio = matrix_shape.num_rows / slicer_shape.num_rows;
-    let col_ratio = matrix_shape.num_cols / slicer_shape.num_cols;
-    // let row_index = start_index / slicer_shape.num_cols;
-    // let col_index = start_index % slicer_shape.num_cols;
+    let rows = matrix_shape.num_rows;
+    let cols = matrix_shape.num_cols;
+    let start_row = start_index / cols;
+    let start_col = start_index % cols;
+    let end_row = start_row + slicer_shape.num_rows;
+    let end_col = start_col + slicer_shape.num_cols;
+    let mut _matrix = matrix;
 
-    __slice_matrix(
-        0_usize, // current_row
-        0_usize, // current_col
-        matrix_shape,
-        slicer_shape,
-        row_ratio,
-        col_ratio,
-        start_index,
-        ref _matrix_data,
-        ref result
-    );
-
-    return result;
+    return __slice_matrix(ref _matrix, rows, cols, start_row, start_col, end_row, end_col);
 }
 
 fn __slice_matrix(
-    current_row: usize,
-    current_col: usize,
-    matrix_shape: MatrixShape,
-    slicer_shape: MatrixShape,
-    row_ratio: usize,
-    col_ratio: usize,
-    start_index: usize,
-    ref matrix_data: Array::<i33>,
-    ref result: Array::<i33>
-) {
+    ref matrix: Array::<i33>,
+    rows: usize,
+    cols: usize,
+    start_row: usize,
+    start_col: usize,
+    end_row: usize,
+    end_col: usize
+) -> Array::<i33> {
+
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -154,46 +135,22 @@ fn __slice_matrix(
         },
     }
 
-    // --- End of the recursion ---
-    if (current_row == slicer_shape.num_rows) {
-        return ();
-    }
+    let row_start = start_row * cols;
+    let row_end = row_start + cols;
 
-    // --- If we reach the limit of columns --- 
-    if (current_col == slicer_shape.num_cols) {
-        // --- The process is repeated for the remaining rows --- 
-        __slice_matrix(
-            current_row + 1_usize, // current_row
-            0_usize, // current_col
-            matrix_shape,
-            slicer_shape,
-            row_ratio,
-            col_ratio,
-            start_index,
-            ref matrix_data,
-            ref result
-        );
-    } else {
-        // --- Find the index ---
-        let index = start_index
-            + (current_row * row_ratio * matrix_shape.num_cols)
-            + (current_col * col_ratio);
+    if (end_row == start_row
+        + 1_usize) {
+            return slice_vec(ref matrix, row_start + start_col, row_start + end_col);
+        }
 
-        // --- Append the value at the index to the new matrix ---
-        result.append(*matrix_data.at(index));
+    let _submatrix = __slice_matrix(
+        ref matrix, rows, cols, start_row + 1_usize, start_col, end_row, end_col
+    );
 
-        // --- The process is repeated for the remaining cols --- 
-        __slice_matrix(
-            current_row, // current_row
-            current_col + 1_usize, // current_col
-            matrix_shape,
-            slicer_shape,
-            row_ratio,
-            col_ratio,
-            start_index,
-            ref matrix_data,
-            ref result
-        );
-    }
+    let submatrix = concat_vectors(
+        slice_vec(ref matrix, row_start + start_col, row_start + end_col), _submatrix
+    );
+
+    return submatrix;
 }
 

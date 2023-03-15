@@ -134,3 +134,65 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
     // --- The process is repeated for the remaining elemets in the array --- 
     __find_min_max(ref vec, ref min_value, ref max_value, n + 1_usize);
 }
+
+//=================================================//
+//=================== SLICE VECTOR ================//
+//=================================================//
+
+fn slice_vec(ref vec: Array::<i33>, start_index: usize, end_index: usize) -> Array::<i33> {
+    let mut result = ArrayTrait::new();
+    __slice_vec(ref vec, end_index, ref result, start_index);
+
+    return result;
+}
+
+fn __slice_vec(ref vec: Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == end_index) {
+        return ();
+    }
+
+    result.append(*vec.at(n));
+    __slice_vec(ref vec, end_index, ref result, n + 1_usize);
+}
+
+//=================================================//
+//=================== CONCAT VECTORS ==============//
+//=================================================//
+
+fn concat_vectors(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+    let mut result = vec1;
+    __concat_vectors(vec2, ref result, 0_usize);
+
+    return result;
+}
+
+fn __concat_vectors(vec: Array::<i33>, ref result: Array::<i33>, n: usize) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == vec.len()) {
+        return ();
+    }
+
+    result.append(*vec.at(n));
+    __concat_vectors(vec, ref result, n + 1_usize);
+}

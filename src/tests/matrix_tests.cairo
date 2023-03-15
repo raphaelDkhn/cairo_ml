@@ -5,6 +5,9 @@ use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::matrix::MatrixShape;
 use cairo_ml::math::int33::i33;
 
+use traits::Into;
+use debug::print_felt;
+
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 #[test]
@@ -36,7 +39,7 @@ fn dot_test() {
 }
 
 #[test]
-#[available_gas(2000000)]
+#[available_gas(20000000)]
 fn slice_matrix_test() {
     let mut matrix = ArrayTrait::new();
     matrix.append(i33 { inner: 1_u32, sign: false });
@@ -51,8 +54,7 @@ fn slice_matrix_test() {
 
     let shape = MatrixShape { num_rows: 3_usize, num_cols: 3_usize };
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
-
-    let mut result = slice_matrix(shape, slicer_shape, matrix, 0_usize);
+    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -71,7 +73,7 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 9_u32, sign: false });
 
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 3_usize };
-    let mut result = slice_matrix(shape, slicer_shape, matrix, 0_usize);
+    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -92,7 +94,7 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 9_u32, sign: false });
 
     let slicer_shape = MatrixShape { num_rows: 3_usize, num_cols: 2_usize };
-    let mut result = slice_matrix(shape, slicer_shape, matrix, 0_usize);
+    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
@@ -114,13 +116,40 @@ fn slice_matrix_test() {
     matrix.append(i33 { inner: 8_u32, sign: false });
     matrix.append(i33 { inner: 9_u32, sign: false });
 
-    let shape = MatrixShape { num_rows: 3_usize, num_cols: 3_usize };
     let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
-
-    let mut result = slice_matrix(shape, slicer_shape, matrix, 1_usize);
+    let mut result = slice_matrix(matrix, shape, slicer_shape, 1_usize);
 
     assert(*result.at(0_usize).inner == 2_u32, 'result[0] == 2');
     assert(*result.at(1_usize).inner == 3_u32, 'result[1] == 3');
+    assert(*result.at(2_usize).inner == 5_u32, 'result[2] == 5');
+    assert(*result.at(3_usize).inner == 6_u32, 'result[3] == 6');
+
+    let mut matrix = ArrayTrait::new();
+    matrix.append(i33 { inner: 1_u32, sign: false });
+    matrix.append(i33 { inner: 2_u32, sign: false });
+    matrix.append(i33 { inner: 3_u32, sign: false });
+    matrix.append(i33 { inner: 4_u32, sign: false });
+    matrix.append(i33 { inner: 5_u32, sign: false });
+    matrix.append(i33 { inner: 6_u32, sign: false });
+    matrix.append(i33 { inner: 7_u32, sign: false });
+    matrix.append(i33 { inner: 8_u32, sign: false });
+    matrix.append(i33 { inner: 9_u32, sign: false });
+    matrix.append(i33 { inner: 8_u32, sign: false });
+    matrix.append(i33 { inner: 9_u32, sign: false });
+    matrix.append(i33 { inner: 10_u32, sign: false });
+    matrix.append(i33 { inner: 11_u32, sign: false });
+    matrix.append(i33 { inner: 12_u32, sign: false });
+    matrix.append(i33 { inner: 13_u32, sign: false });
+    matrix.append(i33 { inner: 14_u32, sign: false });
+    matrix.append(i33 { inner: 15_u32, sign: false });
+    matrix.append(i33 { inner: 16_u32, sign: false });
+
+    let shape = MatrixShape { num_rows: 4_usize, num_cols: 4_usize };
+    let slicer_shape = MatrixShape { num_rows: 2_usize, num_cols: 2_usize };
+    let mut result = slice_matrix(matrix, shape, slicer_shape, 0_usize);
+
+    assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
+    assert(*result.at(1_usize).inner == 2_u32, 'result[1] == 2');
     assert(*result.at(2_usize).inner == 5_u32, 'result[2] == 5');
     assert(*result.at(3_usize).inner == 6_u32, 'result[3] == 6');
 }
