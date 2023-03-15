@@ -1,6 +1,8 @@
 use array::ArrayTrait;
-use cairo_ml::math::int33;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers;
+use cairo_ml::math::signed_integers::i33;
+use cairo_ml::math::vector::slice_vec;
+use cairo_ml::math::vector::concat_vectors;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -81,7 +83,7 @@ fn row_dot_vec(
 
     // --- End of the recursion ---
     if (current_col == matrix_shape.num_cols) {
-        return (i33 { inner: 0_u32, sign: true });
+        return (i33 { inner: 0_u32, sign: false });
     }
 
     // --- Calculates the product ---
@@ -93,3 +95,63 @@ fn row_dot_vec(
     // --- Returns the sum of the current product with the previous ones ---
     return acc + result;
 }
+//=================================================//
+//=================== SLICE MATRIX ================//
+//=================================================//
+
+fn slice_matrix(
+    ref matrix: Array::<i33>,
+    matrix_shape: MatrixShape,
+    slicer_shape: MatrixShape,
+    start_index: usize,
+) -> Array::<i33> {
+    let rows = matrix_shape.num_rows;
+    let cols = matrix_shape.num_cols;
+    let start_row = start_index / cols;
+    let start_col = start_index % cols;
+    let end_row = start_row + slicer_shape.num_rows;
+    let end_col = start_col + slicer_shape.num_cols;
+
+    return __slice_matrix(ref matrix, rows, cols, start_row, start_col, end_row, end_col);
+}
+
+fn __slice_matrix(
+    ref matrix: Array::<i33>,
+    rows: usize,
+    cols: usize,
+    start_row: usize,
+    start_col: usize,
+    end_row: usize,
+    end_col: usize
+) -> Array::<i33> {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    let row_start = start_row * cols;
+    let row_end = row_start + cols;
+
+    // --- End of the recursion ---
+    if (end_row == start_row
+        + 1_usize) {
+            return slice_vec(ref matrix, row_start + start_col, row_start + end_col);
+        }
+
+    let _submatrix = __slice_matrix(
+        ref matrix, rows, cols, start_row + 1_usize, start_col, end_row, end_col
+    );
+
+    let submatrix = concat_vectors(
+        slice_vec(ref matrix, row_start + start_col, row_start + end_col), _submatrix
+    );
+
+    return submatrix;
+}
+

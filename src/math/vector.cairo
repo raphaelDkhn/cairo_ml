@@ -1,6 +1,8 @@
 use array::ArrayTrait;
-use cairo_ml::math::int33;
-use cairo_ml::math::int33::i33;
+use cairo_ml::math::signed_integers;
+use cairo_ml::math::signed_integers::i33_min;
+use cairo_ml::math::signed_integers::i33_max;
+use cairo_ml::math::signed_integers::i33;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
@@ -9,6 +11,8 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 //=================================================//
 
 fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
+
     // Initialize variables.
     let mut _vec1 = vec1;
     let mut _vec2 = vec2;
@@ -33,8 +37,6 @@ fn __sum_two_vec(
         },
     }
 
-    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
-
     // --- End of the recursion ---
     if n == vec1.len() {
         return ();
@@ -47,6 +49,45 @@ fn __sum_two_vec(
     __sum_two_vec(ref vec1, ref vec2, ref result, n + 1_usize);
 }
 
+//=================================================//
+//=================== DOT VECTORS =================//
+//=================================================//
+
+fn vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>) -> i33 {
+    assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
+
+    // Initialize variables.
+    let result = __vec_dot_vec(ref vec1, ref vec2, 0_usize);
+
+    return result;
+}
+
+fn __vec_dot_vec(ref vec1: Array::<i33>, ref vec2: Array::<i33>, n: usize) -> i33 {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if (n == vec1.len()) {
+        return (i33 { inner: 0_u32, sign: false });
+    }
+
+    // --- Calculates the product ---
+    let ele = *vec1.at(n);
+    let result = ele * (*vec2.at(n));
+
+    let acc = __vec_dot_vec(ref vec1, ref vec2, n + 1_usize);
+
+    // --- Returns the sum of the current product with the previous ones ---
+    return acc + result;
+}
 
 //=================================================//
 //=================== FIND IN VECTOR ==============//
@@ -79,17 +120,79 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
     }
 
     // --- Check the minimum value and update min_value if necessary --- 
-    let check_min = int33::min(min_value, *vec.at(n));
+    let check_min = i33_min(min_value, *vec.at(n));
     if (min_value != check_min) {
         min_value = check_min;
     }
 
     // --- Check the maximum value and update max_value if necessary --- 
-    let check_max = int33::max(max_value, *vec.at(n));
+    let check_max = i33_max(max_value, *vec.at(n));
     if (max_value != check_max) {
         max_value = check_max;
     }
 
     // --- The process is repeated for the remaining elemets in the array --- 
     __find_min_max(ref vec, ref min_value, ref max_value, n + 1_usize);
+}
+
+//=================================================//
+//=================== SLICE VECTOR ================//
+//=================================================//
+
+fn slice_vec(ref vec: Array::<i33>, start_index: usize, end_index: usize) -> Array::<i33> {
+    let mut result = ArrayTrait::new();
+    __slice_vec(ref vec, end_index, ref result, start_index);
+
+    return result;
+}
+
+fn __slice_vec(ref vec: Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == end_index) {
+        return ();
+    }
+
+    result.append(*vec.at(n));
+    __slice_vec(ref vec, end_index, ref result, n + 1_usize);
+}
+
+//=================================================//
+//=================== CONCAT VECTORS ==============//
+//=================================================//
+
+fn concat_vectors(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+    let mut result = vec1;
+    __concat_vectors(vec2, ref result, 0_usize);
+
+    return result;
+}
+
+fn __concat_vectors(vec: Array::<i33>, ref result: Array::<i33>, n: usize) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == vec.len()) {
+        return ();
+    }
+
+    result.append(*vec.at(n));
+    __concat_vectors(vec, ref result, n + 1_usize);
 }
