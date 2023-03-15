@@ -11,6 +11,14 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // ================ CROSS CORELATION ===============//
 // =================================================//
 
+// Computes a valid 2D cross-correlation between a Matrix and a kernel.
+// # Arguments
+// * input - A reference to a Matrix to be correlated.
+// * kernel - A reference to a Matrix representing the kernel to be used in the correlation.
+// # Returns
+// * Matrix - The result of the valid cross-correlation of the input Matrix and kernel.
+// # Panics
+// * If the length of the output data does not match the expected size based on the input and kernel shapes.
 fn valid_correlate_2d(input: @Matrix, kernel: @Matrix) -> Matrix {
     // Initialize variables.
     let mut output_data = ArrayTrait::new();

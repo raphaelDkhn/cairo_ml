@@ -10,6 +10,14 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 //=================== SUM VECTORS =================//
 //=================================================//
 
+// Sums two vectors of the same size.
+// # Arguments
+// * vec1 - An Array of i33 integers to be summed with vec2.
+// * vec2 - An Array of i33 integers to be summed with vec1.
+// # Returns
+// * Array::<i33> - An Array containing the result of the element-wise sum of vec1 and vec2.
+// # Panics
+// * If vec1 and vec2 have different lengths.
 fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
@@ -53,6 +61,14 @@ fn __sum_two_vec(
 //=================== DOT VECTORS =================//
 //=================================================//
 
+// Computes the dot product between two i33 vectors.
+// # Arguments
+// * vec1 - The first vector.
+// * vec2 - The second vector.
+// # Returns
+// * i33 - The dot product between vec1 and vec2.
+// # Panics
+// This function will panic if vec1 and vec2 have different lengths.
 fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
@@ -93,6 +109,11 @@ fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
 //=================== FIND IN VECTOR ==============//
 //=================================================//
 
+// Finds the minimum and maximum values in an Array of i33 integers.
+// # Arguments
+// * vec - An Array of i33 integers.
+// # Returns
+// * (i33, i33) - A tuple containing the minimum and maximum values found in the input array.
 fn find_min_max(ref vec: Array::<i33>) -> (i33, i33) {
     // Initialize variables.
     let mut min_value = i33 { inner: 65535_u32, sign: false };
@@ -139,6 +160,13 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
 //=================== SLICE VECTOR ================//
 //=================================================//
 
+// Slices an Array of i33 integers from a start index to an end index.
+// # Arguments
+// * vec - A reference to an Array of i33 integers to slice.
+// * start_index - The index to start the slice from.
+// * end_index - The index to end the slice at.
+// # Returns
+// * Array::<i33> - An Array of i33 integers containing the sliced values.
 fn slice_vec(vec: @Array::<i33>, start_index: usize, end_index: usize) -> Array::<i33> {
     let mut result = ArrayTrait::new();
     __slice_vec(vec, end_index, ref result, start_index);
@@ -170,6 +198,12 @@ fn __slice_vec(vec: @Array::<i33>, end_index: usize, ref result: Array::<i33>, n
 //=================== CONCAT VECTORS ==============//
 //=================================================//
 
+// Concatenates two Arrays of i33 integers.
+// # Arguments
+// * vec1 - The first Array of i33 integers to concatenate.
+// * vec2 - The second Array of i33 integers to concatenate.
+// # Returns
+// * Array::<i33> - An Array of i33 integers containing the concatenated values.
 fn concat_vectors(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
     let mut result = vec1;
     __concat_vectors(vec2, ref result, 0_usize);
