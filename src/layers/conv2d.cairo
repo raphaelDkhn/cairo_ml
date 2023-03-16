@@ -8,7 +8,13 @@ use cairo_ml::math::matrix::matrix_new;
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
 
-
+// 2D convolution layer.
+// # Arguments
+// * inputs - An Array of Matrices representing the input feature maps.
+// * kernels - An Array of Arrays of Matrices representing the convolution kernels.
+// * biases - An Array of Matrices representing the biases for each output feature map.
+// # Returns
+// * Array::<Matrix> - The result of applying the 2D convolution to the input feature maps.
 fn conv2d(
     inputs: @Array::<Matrix>, kernels: @Array::<Array::<Matrix>>, biases: @Array::<Matrix>
 ) -> Array::<Matrix> {

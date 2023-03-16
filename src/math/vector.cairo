@@ -69,12 +69,13 @@ fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let result = __vec_dot_vec(vec1, vec2, 0_usize);
+    let mut sum = i33 { inner: 0_usize, sign: false };
+    let result = __vec_dot_vec(vec1, vec2, 0_usize, sum);
 
     return result;
 }
 
-fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
+fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, index: usize, mut sum: i33) -> i33 {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -86,19 +87,11 @@ fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
         },
     }
 
-    // --- End of the recursion ---
-    if (n == vec1.len()) {
-        return (i33 { inner: 0_u32, sign: false });
+    if index == vec1.len() {
+        sum
+    } else {
+        __vec_dot_vec(vec1, vec2, index + 1_usize, sum + *vec1.at(index) * *vec2.at(index))
     }
-
-    // --- Calculates the product ---
-    let ele = *vec1.at(n);
-    let result = ele * (*vec2.at(n));
-
-    let acc = __vec_dot_vec(vec1, vec2, n + 1_usize);
-
-    // --- Returns the sum of the current product with the previous ones ---
-    return acc + result;
 }
 
 //=================================================//

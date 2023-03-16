@@ -65,7 +65,28 @@ fn conv2D_test() {
     biases.append(bias_helper());
     biases.append(bias_helper());
 
-    conv2d(@inputs, @kernels, @biases);
+    let conv = conv2d(@inputs, @kernels, @biases);
+    let inner1 = conv.at(0_usize).data.at(0_usize).inner;
+    let inner2 = conv.at(0_usize).data.at(1_usize).inner;
+    let inner3 = conv.at(0_usize).data.at(2_usize).inner;
+    let inner4 = conv.at(0_usize).data.at(3_usize).inner;
+
+    assert(*inner1 == 25_u32, 'result[0] == 25');
+    assert(*inner2 == 23_u32, 'result[0] == 23');
+    assert(*inner3 == 9_u32, 'result[0] == 9');
+    assert(*inner4 == 19_u32, 'result[0] == 19');
+
+    let inner1 = conv.at(1_usize).data.at(0_usize).inner;
+    let inner2 = conv.at(1_usize).data.at(1_usize).inner;
+    let inner3 = conv.at(1_usize).data.at(2_usize).inner;
+    let inner4 = conv.at(1_usize).data.at(3_usize).inner;
+
+    assert(*inner1 == 25_u32, 'result[0] == 25');
+    assert(*inner2 == 23_u32, 'result[0] == 23');
+    assert(*inner3 == 9_u32, 'result[0] == 9');
+    assert(*inner4 == 19_u32, 'result[0] == 19');
+
+    assert(conv.len() == 2_usize, 'conv length = 2');
 }
 
 fn input_helper() -> Matrix {
