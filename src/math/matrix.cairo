@@ -6,6 +6,8 @@ use cairo_ml::math::vector::concat_vectors;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl Arrayi33Copy of Copy::<Array::<i33>>;
+impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
+impl ArrayMatrixCopy of Copy::<Array::<Matrix>>;
 
 #[derive(Copy, Drop)]
 struct Matrix {
@@ -156,46 +158,4 @@ fn __slice_matrix(
     );
 
     return submatrix;
-}
-
-//=================================================//
-//============ SLICE ARRAY OF MATRICES ============//
-//=================================================//
-
-// Slices an Array of matrices from a start index to an end index.
-// # Arguments
-// * vec - A reference to an Array of matrices to slice.
-// * start_index - The index to start the slice from.
-// * end_index - The index to end the slice at.
-// # Returns
-// * Array::<i33> - An Array of matrices containing the sliced values.
-fn slice_arr_of_matrices(
-    vec: @Array::<Matrix>, start_index: usize, end_index: usize
-) -> Array::<Matrix> {
-    let mut result = ArrayTrait::new();
-    __slice_arr_of_matrices(vec, end_index, ref result, start_index);
-
-    return result;
-}
-
-fn __slice_arr_of_matrices(
-    vec: @Array::<Matrix>, end_index: usize, ref result: Array::<Matrix>, n: usize
-) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
-
-    if (n == end_index) {
-        return ();
-    }
-
-    result.append(*vec.at(n));
-    __slice_arr_of_matrices(vec, end_index, ref result, n + 1_usize);
 }
