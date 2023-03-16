@@ -1,13 +1,9 @@
 use array::ArrayTrait;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::vector::sum_two_vec;
-use cairo_ml::math::tensor::Tensor;
-use cairo_ml::math::tensor::tensor_new;
 use cairo_ml::math::signal::valid_correlate_2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
-
-use debug::print_felt;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
@@ -92,7 +88,6 @@ fn conv2d_by_kernel(
 
         if n == kernel.len()
             - 1_usize {
-                print_felt(10000);
                 // --- Sum bias ---
                 let sum = sum_two_vec(@acc_correlation, bias.data);
                 output = matrix_new(rows: *bias.rows, cols: *bias.cols, data: sum);

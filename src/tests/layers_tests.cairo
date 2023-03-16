@@ -3,11 +3,8 @@ use cairo_ml::layers::linear::linear;
 use cairo_ml::layers::conv2d::conv2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
-use cairo_ml::math::tensor::Tensor;
-use cairo_ml::math::tensor::tensor_new;
 use cairo_ml::math::signed_integers::i33;
 
-impl ArrayTensorDrop of Drop::<Array::<Tensor>>;
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
 impl ArrayOfArrayMatrixDrop of Drop::<Array::<Array::<Matrix>>>;
