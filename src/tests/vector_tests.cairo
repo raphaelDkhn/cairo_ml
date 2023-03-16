@@ -21,7 +21,7 @@ fn sum_test() {
     vec2.append(i33 { inner: 24476_u32, sign: false });
     vec2.append(i33 { inner: 29585_u32, sign: true });
 
-    let mut result = sum_two_vec(vec1, vec2);
+    let mut result = sum_two_vec(@vec1, @vec2);
 
     assert(*result.at(0_usize).inner == 240_u32, 'result[0] == 240');
     assert(*result.at(0_usize).sign == false, 'result[0] == 240');
@@ -40,7 +40,7 @@ fn sum_test() {
     vec2.append(i33 { inner: 11856_u32, sign: true });
     vec2.append(i33 { inner: 30435_u32, sign: true });
 
-    let mut result = sum_two_vec(vec1, vec2);
+    let mut result = sum_two_vec(@vec1, @vec2);
 
     assert(*result.at(0_usize).inner == 32134_u32, 'result[0] == 32134');
     assert(*result.at(0_usize).sign == false, 'result[0] == 32134');
@@ -59,7 +59,7 @@ fn sum_test() {
     vec2.append(i33 { inner: 15000_u32, sign: true });
     vec2.append(i33 { inner: 16384_u32, sign: false });
 
-    let mut result = sum_two_vec(vec1, vec2);
+    let mut result = sum_two_vec(@vec1, @vec2);
 
     assert(*result.at(0_usize).inner == 42767_u32, 'result[0] == 42767');
     assert(*result.at(0_usize).sign == false, 'result[0] == 42767');

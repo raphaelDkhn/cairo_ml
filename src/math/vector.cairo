@@ -18,22 +18,18 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // * Array::<i33> - An Array containing the result of the element-wise sum of vec1 and vec2.
 // # Panics
 // * If vec1 and vec2 have different lengths.
-fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+fn sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> Array::<i33> {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let mut _vec1 = vec1;
-    let mut _vec2 = vec2;
     let mut result = ArrayTrait::new();
 
-    __sum_two_vec(ref _vec1, ref _vec2, ref result, 0_usize);
+    __sum_two_vec(vec1, vec2, ref result, 0_usize);
 
     return result;
 }
 
-fn __sum_two_vec(
-    ref vec1: Array::<i33>, ref vec2: Array::<i33>, ref result: Array::<i33>, n: usize, 
-) {
+fn __sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, ref result: Array::<i33>, n: usize, ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -54,7 +50,7 @@ fn __sum_two_vec(
     result.append(*vec1.at(n) + *vec2.at(n));
 
     // --- The process is repeated for the remaining elemets in the array --- 
-    __sum_two_vec(ref vec1, ref vec2, ref result, n + 1_usize);
+    __sum_two_vec(vec1, vec2, ref result, n + 1_usize);
 }
 
 //=================================================//
@@ -73,12 +69,13 @@ fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let result = __vec_dot_vec(vec1, vec2, 0_usize);
+    let mut sum = i33 { inner: 0_usize, sign: false };
+    let result = __vec_dot_vec(vec1, vec2, 0_usize, sum);
 
     return result;
 }
 
-fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
+fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, index: usize, mut sum: i33) -> i33 {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -90,19 +87,11 @@ fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, n: usize) -> i33 {
         },
     }
 
-    // --- End of the recursion ---
-    if (n == vec1.len()) {
-        return (i33 { inner: 0_u32, sign: false });
+    if index == vec1.len() {
+        sum
+    } else {
+        __vec_dot_vec(vec1, vec2, index + 1_usize, sum + *vec1.at(index) * *vec2.at(index))
     }
-
-    // --- Calculates the product ---
-    let ele = *vec1.at(n);
-    let result = ele * (*vec2.at(n));
-
-    let acc = __vec_dot_vec(vec1, vec2, n + 1_usize);
-
-    // --- Returns the sum of the current product with the previous ones ---
-    return acc + result;
 }
 
 //=================================================//

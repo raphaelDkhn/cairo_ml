@@ -5,8 +5,11 @@ use cairo_ml::math::vector::slice_vec;
 use cairo_ml::math::vector::concat_vectors;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
+impl Arrayi33Copy of Copy::<Array::<i33>>;
+impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
+impl ArrayMatrixCopy of Copy::<Array::<Matrix>>;
 
-#[derive(Drop)]
+#[derive(Copy, Drop)]
 struct Matrix {
     rows: usize,
     cols: usize,
@@ -123,6 +126,7 @@ fn slice_matrix(matrix: @Matrix, slicer: (usize, usize), start_index: usize) -> 
     let end_col = start_col + slicer_cols;
 
     let data = __slice_matrix(matrix, start_row, start_col, end_row, end_col);
+
     return matrix_new(slicer_rows, slicer_cols, data);
 }
 
