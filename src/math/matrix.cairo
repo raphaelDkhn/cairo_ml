@@ -21,11 +21,12 @@ struct Matrix {
 // # Returns
 // * Matrix - The new matrix created with the specified dimensions and data.
 fn matrix_new(rows: usize, cols: usize, data: Array::<i33>) -> Matrix {
+    assert(data.len() == rows * cols, 'Matrix not match dimensions');
     Matrix { rows: rows, cols: cols, data: data,  }
 }
 
 //=================================================//
-//================ MATRIX DOT VECTORS =============//
+//================ MATRIX DOT VECTOR =============//
 //=================================================//
 
 // Computes the dot product of a matrix and a vector.
@@ -114,7 +115,6 @@ fn row_dot_vec(matrix: @Matrix, ref vector: Array::<i33>, row: usize, current_co
 // # Returns
 // * Matrix - The new Matrix created by slicing the original Matrix with the specified dimensions.
 fn slice_matrix(matrix: @Matrix, slicer: (usize, usize), start_index: usize) -> Matrix {
-
     // Initialize variables.
     let (slicer_rows, slicer_cols) = slicer;
     let start_row = start_index / *matrix.cols;
@@ -144,9 +144,10 @@ fn __slice_matrix(
     let row_end = row_start + *matrix.cols;
 
     // --- End of the recursion ---
-    if (end_row == start_row + 1_usize) {
-        return slice_vec(matrix.data, row_start + start_col, row_start + end_col);
-    }
+    if (end_row == start_row
+        + 1_usize) {
+            return slice_vec(matrix.data, row_start + start_col, row_start + end_col);
+        }
 
     let _submatrix = __slice_matrix(matrix, start_row + 1_usize, start_col, end_row, end_col);
     let submatrix = concat_vectors(

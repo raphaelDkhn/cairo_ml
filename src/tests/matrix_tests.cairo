@@ -90,6 +90,6 @@ fn matrix_helper() -> Matrix {
     data.append(i33 { inner: 8_u32, sign: false });
     data.append(i33 { inner: 9_u32, sign: false });
 
-    matrix_new(2_usize, 3_usize, data)
+    matrix_new(3_usize, 3_usize, data)
 }
 
