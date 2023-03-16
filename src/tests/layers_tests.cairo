@@ -3,8 +3,11 @@ use cairo_ml::layers::linear;
 use cairo_ml::layers::conv2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
+use cairo_ml::math::tensor::Tensor;
 use cairo_ml::math::tensor::tensor_new;
 use cairo_ml::math::signed_integers::i33;
+
+impl ArrayTensorDrop of Drop::<Array::<Tensor>>;
 
 #[test]
 #[available_gas(2000000)]
@@ -43,21 +46,26 @@ fn conv2D_test() {
     input_data.append(input_helper());
     let mut input = tensor_new(1_usize, 1_usize, 3_usize, input_data);
 
-    let mut kernels_data = ArrayTrait::new();
-    kernels_data.append(input_helper());
-    kernels_data.append(input_helper());
-    kernels_data.append(input_helper());
-    kernels_data.append(input_helper());
-    kernels_data.append(input_helper());
-    kernels_data.append(input_helper());
-    let mut kernels = tensor_new(1_usize, 2_usize, 3_usize, kernels_data);
+    let mut kernel_1_data = ArrayTrait::new();
+    kernel_1_data.append(kernel_helper());
+    kernel_1_data.append(kernel_helper());
+    kernel_1_data.append(kernel_helper());
+    let mut kernel_1 = tensor_new(1_usize, 1_usize, 3_usize, kernel_1_data);
+    let mut kernel_2_data = ArrayTrait::new();
+    kernel_2_data.append(kernel_helper());
+    kernel_2_data.append(kernel_helper());
+    kernel_2_data.append(kernel_helper());
+    let mut kernel_2 = tensor_new(1_usize, 1_usize, 3_usize, kernel_2_data);
+    let mut kernels = ArrayTrait::new();
+    kernels.append(kernel_1);
+    kernels.append(kernel_2);
 
     let mut biases_data = ArrayTrait::new();
-    biases_data.append(input_helper());
-    biases_data.append(input_helper());
+    biases_data.append(bias_helper());
+    biases_data.append(bias_helper());
     let mut biases = tensor_new(1_usize, 2_usize, 1_usize, biases_data);
 
-    //conv2d::conv2d(@input, @kernels, @biases);
+    conv2d::conv2d(@input, @kernels, @biases);
 }
 
 fn input_helper() -> Matrix {

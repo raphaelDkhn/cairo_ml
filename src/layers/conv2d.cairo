@@ -10,8 +10,9 @@ use cairo_ml::math::matrix::slice_arr_of_matrices;
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
-fn conv2d(input: @Tensor, kernels: @Tensor, biases: @Tensor) -> Tensor {
-    assert(*kernels.depth == *input.depth, 'kernels depth do not match');
+fn conv2d(input: @Tensor, kernels: @Array::<Tensor>, biases: @Tensor) -> Tensor {
+    //TODO
+    // assert(*kernels.depth == *input.depth, 'kernels depth do not match');
 
     //Initialize variables
     let mut output_data = ArrayTrait::new();
@@ -22,7 +23,11 @@ fn conv2d(input: @Tensor, kernels: @Tensor, biases: @Tensor) -> Tensor {
 }
 
 fn __conv2d(
-    input: @Tensor, kernels: @Tensor, biases: @Tensor, ref output_data: Array::<Matrix>, n: usize, 
+    input: @Tensor,
+    kernels: @Array::<Tensor>,
+    biases: @Tensor,
+    ref output_data: Array::<Matrix>,
+    n: usize,
 ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
@@ -40,17 +45,21 @@ fn __conv2d(
         return ();
     }
 
-    let get_kernel_data = slice_arr_of_matrices(
-        kernels.data, n * *kernels.depth, *kernels.depth * (n + 1_usize)
-    );
+    // let get_kernel_data = slice_arr_of_matrices(
+    //     kernels.data, n * *kernels.depth, *kernels.depth * (n + 1_usize)
+    // );
 
-    let kernel = tensor_new(1_usize, 1_usize, *kernels.depth, get_kernel_data);
+    // let mut matrix_data = ArrayTrait::new();
+    // let mut matrix_arr = ArrayTrait::new();
+    // matrix_arr.append(Matrix { rows: 0_usize, cols: 0_usize, data: matrix_data });
+
+    let kernel = kernels.at(n);
 
     let output_n_data = ArrayTrait::new();
     let mut acc_correlation = ArrayTrait::new();
     let mut output_n = matrix_new(*biases.data.at(n).rows, *biases.data.at(n).cols, output_n_data);
 
-    conv2d_by_depth(input, @kernel, biases.data.at(n), ref acc_correlation, ref output_n, 0_usize);
+    conv2d_by_depth(input, kernel, biases.data.at(n), ref acc_correlation, ref output_n, 0_usize);
     output_data.append(output_n);
 
     __conv2d(input, kernels, biases, ref output_data, n + 1_usize);
