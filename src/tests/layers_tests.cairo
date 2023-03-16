@@ -39,7 +39,7 @@ fn linear_layer_test() {
 }
 
 #[test]
-#[available_gas(200000000000)]
+#[available_gas(20000000)]
 fn conv2D_test() {
     //Intiate inputs
     let mut inputs = ArrayTrait::new();
