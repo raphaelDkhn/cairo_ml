@@ -5,8 +5,10 @@ use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::matrix::Matrix;
 
-impl Arrayi33Drop of Drop::<Array::<i33>>;
+impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
+impl ArrayTensorCopy of Copy::<Array::<Matrix>>;
 
+#[derive(Copy, Drop)]
 struct Tensor {
     rows: usize,
     cols: usize,

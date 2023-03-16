@@ -18,22 +18,18 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // * Array::<i33> - An Array containing the result of the element-wise sum of vec1 and vec2.
 // # Panics
 // * If vec1 and vec2 have different lengths.
-fn sum_two_vec(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
+fn sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> Array::<i33> {
     assert(vec1.len() == vec2.len(), 'Vectors must have the same size');
 
     // Initialize variables.
-    let mut _vec1 = vec1;
-    let mut _vec2 = vec2;
     let mut result = ArrayTrait::new();
 
-    __sum_two_vec(ref _vec1, ref _vec2, ref result, 0_usize);
+    __sum_two_vec(vec1, vec2, ref result, 0_usize);
 
     return result;
 }
 
-fn __sum_two_vec(
-    ref vec1: Array::<i33>, ref vec2: Array::<i33>, ref result: Array::<i33>, n: usize, 
-) {
+fn __sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, ref result: Array::<i33>, n: usize, ) {
     // --- Check if out of gas ---
     // TODO: Remove when automatically handled by compiler.
     match gas::get_gas() {
@@ -54,7 +50,7 @@ fn __sum_two_vec(
     result.append(*vec1.at(n) + *vec2.at(n));
 
     // --- The process is repeated for the remaining elemets in the array --- 
-    __sum_two_vec(ref vec1, ref vec2, ref result, n + 1_usize);
+    __sum_two_vec(vec1, vec2, ref result, n + 1_usize);
 }
 
 //=================================================//

@@ -27,7 +27,7 @@ fn linear(inputs: Array::<i33>, weights: @Matrix, bias: Array::<i33>) -> (Array:
     let dot_result = matrix_dot_vec(weights, inputs);
 
     // --- Add bias ---
-    let mut result = sum_two_vec(dot_result, bias);
+    let mut result = sum_two_vec(@dot_result, @bias);
 
     // --- Return quantized result --- 
     return quant_vec(ref result);
