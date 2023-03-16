@@ -35,7 +35,7 @@ $ make test
 
 ### Layers
 - [x] Linear
-- [ ] Conv2d
+- [x] Conv2d
 
 ### Math
 
@@ -60,7 +60,6 @@ $ make test
 
 ## TODO
 - Activation layers
-- Convolutional layer
 - MNIST example
 - more
 
