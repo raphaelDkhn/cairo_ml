@@ -37,6 +37,9 @@ $ make test
 - [x] Linear
 - [x] Conv2d
 
+### Activations
+- [x] ReLu
+
 ### Math
 
 #### Matrix
