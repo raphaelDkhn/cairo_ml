@@ -4,3 +4,4 @@ mod matrix_tests;
 mod quantizations_tests;
 mod layers_tests;
 mod signal_tests;
+mod activations_tests;
