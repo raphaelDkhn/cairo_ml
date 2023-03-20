@@ -580,7 +580,7 @@ impl i33BitAnd of BitAnd::<i33> {
     }
 }
 
-fn left_shit(value: i33, shift_amount: u64) -> i33 {
+fn i33_left_shit(value: i33, shift_amount: u64) -> i33 {
     let value_i65 = i33_to_i65(value);
     let mut result = i33_to_i65(value);
 
@@ -598,6 +598,7 @@ fn left_shit(value: i33, shift_amount: u64) -> i33 {
 
     // Check for overflow and limit result to bit_width bits.
     result = result & mask;
+   // print_felt(result.inner.into());
 
     let is_negative = result & i65_power(two, 32_u64 - 1_u64);
 

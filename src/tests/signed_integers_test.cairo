@@ -5,7 +5,7 @@ use cairo_ml::math::signed_integers::div_rem;
 use cairo_ml::math::signed_integers::i33_power;
 use cairo_ml::math::signed_integers::i33_twos_compl;
 use cairo_ml::math::signed_integers::twos_compl_to_i33;
-use cairo_ml::math::signed_integers::left_shit;
+use cairo_ml::math::signed_integers::i33_left_shit;
 
 use debug::print_felt;
 use traits::Into;
@@ -435,12 +435,12 @@ fn bitand_test() {
 #[available_gas(200000000)]
 fn left_shit_test() {
     let x = i33 { inner: 42_u32, sign: false };
-    let res = left_shit(x, 8_u64);
+    let res = i33_left_shit(x, 8_u64);
     assert(res.inner == 10752_u32, '42 << 8 = 10752 ');
     assert(res.sign == false, '42 << 8 = 10752');
 
     let x = i33 { inner: 42_u32, sign: true };
-    let res = left_shit(x, 8_u64);
+    let res = i33_left_shit(x, 8_u64);
 
     assert(res.inner == 10752_u32, '-42 << 8 = - 10752');
     assert(res.sign == true, '-42 << 8 = - 10752');

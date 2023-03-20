@@ -5,3 +5,4 @@ mod quantizations_tests;
 mod layers_tests;
 mod signal_tests;
 mod activations_tests;
+mod fixed_point_tests;
