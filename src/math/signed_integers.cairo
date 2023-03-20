@@ -1,845 +1,11 @@
-// Signed integers : i9, i17, i33, i65, i129
-
-// ====================== INT 9 ======================
-
-// i9 represents a 9-bit integer.
-// The inner field holds the absolute value of the integer.
-// The sign field is true for negative integers, and false for non-negative integers.
-#[derive(Copy, Drop)]
-struct i9 {
-    inner: u8,
-    sign: bool,
-}
-
-// Checks if the given i9 integer is zero and has the correct sign.
-// # Arguments
-// * `x` - The i9 integer to check.
-// # Panics
-// Panics if `x` is zero and has a sign that is not false.
-fn i9_check_sign_zero(x: i9) {
-    if x.inner == 0_u8 {
-        assert(x.sign == false, 'sign of 0 must be false');
-    }
-}
-
-// Adds two i9 integers.
-// # Arguments
-// * `a` - The first i9 to add.
-// * `b` - The second i9 to add.
-// # Returns
-// * `i9` - The sum of `a` and `b`.
-fn i9_add(a: i9, b: i9) -> i9 {
-    i9_check_sign_zero(a);
-    i9_check_sign_zero(b);
-
-    // If both integers have the same sign, 
-    // the sum of their absolute values can be returned.
-    if a.sign == b.sign {
-        let sum = a.inner + b.inner;
-        if (sum == 0_u8) {
-            return i9 { inner: sum, sign: false };
-        }
-        return i9 { inner: sum, sign: a.sign };
-    } else {
-        // If the integers have different signs, 
-        // the larger absolute value is subtracted from the smaller one.
-        let (larger, smaller) = if a.inner >= b.inner {
-            (a, b)
-        } else {
-            (b, a)
-        };
-        let difference = larger.inner - smaller.inner;
-
-        if (difference == 0_u8) {
-            return i9 { inner: difference, sign: false };
-        }
-        return i9 { inner: difference, sign: larger.sign };
-    }
-}
-
-// Implements the Add trait for i9.
-impl i9Add of Add::<i9> {
-    fn add(a: i9, b: i9) -> i9 {
-        i9_add(a, b)
-    }
-}
-
-// Implements the AddEq trait for i9.
-impl i9AddEq of AddEq::<i9> {
-    #[inline(always)]
-    fn add_eq(ref self: i9, other: i9) {
-        self = Add::add(self, other);
-    }
-}
-
-// Subtracts two i9 integers.
-// # Arguments
-// * `a` - The first i9 to subtract.
-// * `b` - The second i9 to subtract.
-// # Returns
-// * `i9` - The difference of `a` and `b`.
-fn i9_sub(a: i9, b: i9) -> i9 {
-    i9_check_sign_zero(a);
-    i9_check_sign_zero(b);
-
-    if (b.inner == 0_u8) {
-        return a;
-    }
-
-    // The subtraction of `a` to `b` is achieved by negating `b` sign and adding it to `a`.
-    let neg_b = i9 { inner: b.inner, sign: !b.sign };
-    return a + neg_b;
-}
-
-// Implements the Sub trait for i9.
-impl i9Sub of Sub::<i9> {
-    fn sub(a: i9, b: i9) -> i9 {
-        i9_sub(a, b)
-    }
-}
-
-// Implements the SubEq trait for i9.
-impl i9SubEq of SubEq::<i9> {
-    #[inline(always)]
-    fn sub_eq(ref self: i9, other: i9) {
-        self = Sub::sub(self, other);
-    }
-}
-
-// Multiplies two i9 integers.
-// 
-// # Arguments
-//
-// * `a` - The first i9 to multiply.
-// * `b` - The second i9 to multiply.
-//
-// # Returns
-//
-// * `i9` - The product of `a` and `b`.
-fn i9_mul(a: i9, b: i9) -> i9 {
-    i9_check_sign_zero(a);
-    i9_check_sign_zero(b);
-
-    // The sign of the product is the XOR of the signs of the operands.
-    let sign = a.sign ^ b.sign;
-    // The product is the product of the absolute values of the operands.
-    let inner = a.inner * b.inner;
-
-    if (inner == 0_u8) {
-        return i9 { inner: inner, sign: false };
-    }
-
-    return i9 { inner, sign };
-}
-
-// Implements the Mul trait for i9.
-impl i9Mul of Mul::<i9> {
-    fn mul(a: i9, b: i9) -> i9 {
-        i9_mul(a, b)
-    }
-}
-
-// Implements the MulEq trait for i9.
-impl i9MulEq of MulEq::<i9> {
-    #[inline(always)]
-    fn mul_eq(ref self: i9, other: i9) {
-        self = Mul::mul(self, other);
-    }
-}
-
-// Divides the first i9 by the second i9.
-// # Arguments
-// * `a` - The i9 dividend.
-// * `b` - The i9 divisor.
-// # Returns
-// * `i9` - The quotient of `a` and `b`.
-fn i9_div(a: i9, b: i9) -> i9 {
-    i9_check_sign_zero(a);
-    // Check that the divisor is not zero.
-    assert(b.inner != 0_u8, 'b can not be 0');
-
-    // The sign of the quotient is the XOR of the signs of the operands.
-    let sign = a.sign ^ b.sign;
-
-    if (sign == false) {
-        // If the operands are positive, the quotient is simply their absolute value quotient.
-        return i9 { inner: a.inner / b.inner, sign: sign };
-    }
-
-    // If the operands have different signs, rounding is necessary.
-    // First, check if the quotient is an integer.
-    if (a.inner % b.inner == 0_u8) {
-        let quotient = a.inner / b.inner;
-        if (quotient == 0_u8) {
-            return i9 { inner: quotient, sign: false };
-        }
-        return i9 { inner: quotient, sign: sign };
-    }
-
-    // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
-    let quotient = (a.inner * 10_u8) / b.inner;
-    let last_digit = quotient % 10_u8;
-
-    if (quotient == 0_u8) {
-        return i9 { inner: quotient, sign: false };
-    }
-
-    // Check the last digit to determine rounding direction.
-    if (last_digit <= 5_u8) {
-        return i9 { inner: quotient / 10_u8, sign: sign };
-    } else {
-        return i9 { inner: (quotient / 10_u8) + 1_u8, sign: sign };
-    }
-}
-
-// Implements the Div trait for i9.
-impl i9Div of Div::<i9> {
-    fn div(a: i9, b: i9) -> i9 {
-        i9_div(a, b)
-    }
-}
-
-// Implements the DivEq trait for i9.
-impl i9DivEq of DivEq::<i9> {
-    #[inline(always)]
-    fn div_eq(ref self: i9, other: i9) {
-        self = Div::div(self, other);
-    }
-}
-
-// Calculates the remainder of the division of a first i9 by a second i9.
-// # Arguments
-// * `a` - The i9 dividend.
-// * `b` - The i9 divisor.
-// # Returns
-// * `i9` - The remainder of dividing `a` by `b`.
-fn i9_rem(a: i9, b: i9) -> i9 {
-    i9_check_sign_zero(a);
-    // Check that the divisor is not zero.
-    assert(b.inner != 0_u8, 'b can not be 0');
-
-    return a - (b * (a / b));
-}
-
-// Implements the Rem trait for i9.
-impl i9Rem of Rem::<i9> {
-    fn rem(a: i9, b: i9) -> i9 {
-        i9_rem(a, b)
-    }
-}
-
-// Implements the RemEq trait for i9.
-impl i9RemEq of RemEq::<i9> {
-    #[inline(always)]
-    fn rem_eq(ref self: i9, other: i9) {
-        self = Rem::rem(self, other);
-    }
-}
-
-// Calculates both the quotient and the remainder of the division of a first i9 by a second i9.
-// # Arguments
-// * `a` - The i9 dividend.
-// * `b` - The i9 divisor.
-// # Returns
-// * `(i9, i9)` - A tuple containing the quotient and the remainder of dividing `a` by `b`.
-fn i9_div_rem(a: i9, b: i9) -> (i9, i9) {
-    let quotient = i9_div(a, b);
-    let remainder = i9_rem(a, b);
-
-    return (quotient, remainder);
-}
-
-// Compares two i9 integers for equality.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `bool` - `true` if the two integers are equal, `false` otherwise.
-fn i9_eq(a: i9, b: i9) -> bool {
-    // Check if the two integers have the same sign and the same absolute value.
-    if a.sign == b.sign & a.inner == b.inner {
-        return true;
-    }
-
-    return false;
-}
-
-// Compares two i9 integers for inequality.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `bool` - `true` if the two integers are not equal, `false` otherwise.
-fn i9_ne(a: i9, b: i9) -> bool {
-    // The result is the inverse of the equal function.
-    return !i9_eq(a, b);
-}
-
-// Implements the PartialEq trait for i9.
-impl i9PartialEq of PartialEq::<i9> {
-    fn eq(a: i9, b: i9) -> bool {
-        i9_eq(a, b)
-    }
-
-    fn ne(a: i9, b: i9) -> bool {
-        i9_ne(a, b)
-    }
-}
-
-// Compares two i9 integers for greater than.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is greater than `b`, `false` otherwise.
-fn i9_gt(a: i9, b: i9) -> bool {
-    // Check if `a` is negative and `b` is positive.
-    if (a.sign & !b.sign) {
-        return false;
-    }
-    // Check if `a` is positive and `b` is negative.
-    if (!a.sign & b.sign) {
-        return true;
-    }
-    // If `a` and `b` have the same sign, compare their absolute values.
-    if (a.sign & b.sign) {
-        return a.inner < b.inner;
-    } else {
-        return a.inner > b.inner;
-    }
-}
-
-// Determines whether the first i9 is less than the second i9.
-// # Arguments
-// * `a` - The i9 to compare against the second i9.
-// * `b` - The i9 to compare against the first i9.
-// # Returns
-// * `bool` - `true` if `a` is less than `b`, `false` otherwise.
-fn i9_lt(a: i9, b: i9) -> bool {
-    // The result is the inverse of the greater than function.
-    return !i9_gt(a, b);
-}
-
-// Checks if the first i9 integer is less than or equal to the second.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is less than or equal to `b`, `false` otherwise.
-fn i9_le(a: i9, b: i9) -> bool {
-    if (a == b | i9_lt(a, b) == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Checks if the first i9 integer is greater than or equal to the second.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is greater than or equal to `b`, `false` otherwise.
-fn i9_ge(a: i9, b: i9) -> bool {
-    if (a == b | i9_gt(a, b) == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Implements the PartialOrd trait for i9.
-impl i9PartialOrd of PartialOrd::<i9> {
-    fn le(a: i9, b: i9) -> bool {
-        i9_le(a, b)
-    }
-    fn ge(a: i9, b: i9) -> bool {
-        i9_ge(a, b)
-    }
-
-    fn lt(a: i9, b: i9) -> bool {
-        i9_lt(a, b)
-    }
-    fn gt(a: i9, b: i9) -> bool {
-        i9_gt(a, b)
-    }
-}
-
-// Negates the given i9 integer.
-// # Arguments
-// * `x` - The i9 integer to negate.
-// # Returns
-// * `i9` - The negation of `x`.
-fn i9_neg(x: i9) -> i9 {
-    // The negation of an integer is obtained by flipping its sign.
-    return i9 { inner: x.inner, sign: !x.sign };
-}
-
-// Implements the Neg trait for i9.
-impl i9Neg of Neg::<i9> {
-    fn neg(x: i9) -> i9 {
-        i9_neg(x)
-    }
-}
-
-// Computes the absolute value of the given i9 integer.
-// # Arguments
-// * `x` - The i9 integer to compute the absolute value of.
-// # Returns
-// * `i9` - The absolute value of `x`.
-fn i9_abs(x: i9) -> i9 {
-    return i9 { inner: x.inner, sign: false };
-}
-
-// Computes the maximum between two i9 integers.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `i9` - The maximum between `a` and `b`.
-fn i9_max(a: i9, b: i9) -> i9 {
-    if (a > b) {
-        return a;
-    } else {
-        return b;
-    }
-}
-
-// Computes the minimum between two i9 integers.
-// # Arguments
-// * `a` - The first i9 integer to compare.
-// * `b` - The second i9 integer to compare.
-// # Returns
-// * `i9` - The minimum between `a` and `b`.
-fn i9_min(a: i9, b: i9) -> i9 {
-    if (a < b) {
-        return a;
-    } else {
-        return b;
-    }
-}
-
-// ====================== INT 17 ======================
-
-// i17 represents a 17-bit integer.
-// The inner field holds the absolute value of the integer.
-// The sign field is true for negative integers, and false for non-negative integers.
-#[derive(Copy, Drop)]
-struct i17 {
-    inner: u16,
-    sign: bool,
-}
-
-// Checks if the given i17 integer is zero and has the correct sign.
-// # Arguments
-// * `x` - The i17 integer to check.
-// # Panics
-// Panics if `x` is zero and has a sign that is not false.
-fn i17_check_sign_zero(x: i17) {
-    if x.inner == 0_u16 {
-        assert(x.sign == false, 'sign of 0 must be false');
-    }
-}
-
-// Adds two i17 integers.
-// # Arguments
-// * `a` - The first i17 to add.
-// * `b` - The second i17 to add.
-// # Returns
-// * `i17` - The sum of `a` and `b`.
-fn i17_add(a: i17, b: i17) -> i17 {
-    i17_check_sign_zero(a);
-    i17_check_sign_zero(b);
-
-    // If both integers have the same sign, 
-    // the sum of their absolute values can be returned.
-    if a.sign == b.sign {
-        let sum = a.inner + b.inner;
-        if (sum == 0_u16) {
-            return i17 { inner: sum, sign: false };
-        }
-        return i17 { inner: sum, sign: a.sign };
-    } else {
-        // If the integers have different signs, 
-        // the larger absolute value is subtracted from the smaller one.
-        let (larger, smaller) = if a.inner >= b.inner {
-            (a, b)
-        } else {
-            (b, a)
-        };
-        let difference = larger.inner - smaller.inner;
-
-        if (difference == 0_u16) {
-            return i17 { inner: difference, sign: false };
-        }
-        return i17 { inner: difference, sign: larger.sign };
-    }
-}
-
-// Implements the Add trait for i17.
-impl i17Add of Add::<i17> {
-    fn add(a: i17, b: i17) -> i17 {
-        i17_add(a, b)
-    }
-}
-
-// Implements the AddEq trait for i17.
-impl i17AddEq of AddEq::<i17> {
-    #[inline(always)]
-    fn add_eq(ref self: i17, other: i17) {
-        self = Add::add(self, other);
-    }
-}
-
-// Subtracts two i17 integers.
-// # Arguments
-// * `a` - The first i17 to subtract.
-// * `b` - The second i17 to subtract.
-// # Returns
-// * `i17` - The difference of `a` and `b`.
-fn i17_sub(a: i17, b: i17) -> i17 {
-    i17_check_sign_zero(a);
-    i17_check_sign_zero(b);
-
-    if (b.inner == 0_u16) {
-        return a;
-    }
-
-    // The subtraction of `a` to `b` is achieved by negating `b` sign and adding it to `a`.
-    let neg_b = i17 { inner: b.inner, sign: !b.sign };
-    return a + neg_b;
-}
-
-// Implements the Sub trait for i17.
-impl i17Sub of Sub::<i17> {
-    fn sub(a: i17, b: i17) -> i17 {
-        i17_sub(a, b)
-    }
-}
-
-// Implements the SubEq trait for i17.
-impl i17SubEq of SubEq::<i17> {
-    #[inline(always)]
-    fn sub_eq(ref self: i17, other: i17) {
-        self = Sub::sub(self, other);
-    }
-}
-
-// Multiplies two i17 integers.
-// 
-// # Arguments
-//
-// * `a` - The first i17 to multiply.
-// * `b` - The second i17 to multiply.
-//
-// # Returns
-//
-// * `i17` - The product of `a` and `b`.
-fn i17_mul(a: i17, b: i17) -> i17 {
-    i17_check_sign_zero(a);
-    i17_check_sign_zero(b);
-
-    // The sign of the product is the XOR of the signs of the operands.
-    let sign = a.sign ^ b.sign;
-    // The product is the product of the absolute values of the operands.
-    let inner = a.inner * b.inner;
-
-    if (inner == 0_u16) {
-        return i17 { inner: inner, sign: false };
-    }
-
-    return i17 { inner, sign };
-}
-
-// Implements the Mul trait for i17.
-impl i17Mul of Mul::<i17> {
-    fn mul(a: i17, b: i17) -> i17 {
-        i17_mul(a, b)
-    }
-}
-
-// Implements the MulEq trait for i17.
-impl i17MulEq of MulEq::<i17> {
-    #[inline(always)]
-    fn mul_eq(ref self: i17, other: i17) {
-        self = Mul::mul(self, other);
-    }
-}
-
-// Divides the first i17 by the second i17.
-// # Arguments
-// * `a` - The i17 dividend.
-// * `b` - The i17 divisor.
-// # Returns
-// * `i17` - The quotient of `a` and `b`.
-fn i17_div(a: i17, b: i17) -> i17 {
-    i17_check_sign_zero(a);
-    // Check that the divisor is not zero.
-    assert(b.inner != 0_u16, 'b can not be 0');
-
-    // The sign of the quotient is the XOR of the signs of the operands.
-    let sign = a.sign ^ b.sign;
-
-    if (sign == false) {
-        // If the operands are positive, the quotient is simply their absolute value quotient.
-        return i17 { inner: a.inner / b.inner, sign: sign };
-    }
-
-    // If the operands have different signs, rounding is necessary.
-    // First, check if the quotient is an integer.
-    if (a.inner % b.inner == 0_u16) {
-        let quotient = a.inner / b.inner;
-        if (quotient == 0_u16) {
-            return i17 { inner: quotient, sign: false };
-        }
-        return i17 { inner: quotient, sign: sign };
-    }
-
-    // If the quotient is not an integer, multiply the dividend by 10 to move the decimal point over.
-    let quotient = (a.inner * 10_u16) / b.inner;
-    let last_digit = quotient % 10_u16;
-
-    if (quotient == 0_u16) {
-        return i17 { inner: quotient, sign: false };
-    }
-
-    // Check the last digit to determine rounding direction.
-    if (last_digit <= 5_u16) {
-        return i17 { inner: quotient / 10_u16, sign: sign };
-    } else {
-        return i17 { inner: (quotient / 10_u16) + 1_u16, sign: sign };
-    }
-}
-
-// Implements the Div trait for i17.
-impl i17Div of Div::<i17> {
-    fn div(a: i17, b: i17) -> i17 {
-        i17_div(a, b)
-    }
-}
-
-// Implements the DivEq trait for i17.
-impl i17DivEq of DivEq::<i17> {
-    #[inline(always)]
-    fn div_eq(ref self: i17, other: i17) {
-        self = Div::div(self, other);
-    }
-}
-
-// Calculates the remainder of the division of a first i17 by a second i17.
-// # Arguments
-// * `a` - The i17 dividend.
-// * `b` - The i17 divisor.
-// # Returns
-// * `i17` - The remainder of dividing `a` by `b`.
-fn i17_rem(a: i17, b: i17) -> i17 {
-    i17_check_sign_zero(a);
-    // Check that the divisor is not zero.
-    assert(b.inner != 0_u16, 'b can not be 0');
-
-    return a - (b * (a / b));
-}
-
-// Implements the Rem trait for i17.
-impl i17Rem of Rem::<i17> {
-    fn rem(a: i17, b: i17) -> i17 {
-        i17_rem(a, b)
-    }
-}
-
-// Implements the RemEq trait for i17.
-impl i17RemEq of RemEq::<i17> {
-    #[inline(always)]
-    fn rem_eq(ref self: i17, other: i17) {
-        self = Rem::rem(self, other);
-    }
-}
-
-// Calculates both the quotient and the remainder of the division of a first i17 by a second i17.
-// # Arguments
-// * `a` - The i17 dividend.
-// * `b` - The i17 divisor.
-// # Returns
-// * `(i17, i17)` - A tuple containing the quotient and the remainder of dividing `a` by `b`.
-fn i17_div_rem(a: i17, b: i17) -> (i17, i17) {
-    let quotient = i17_div(a, b);
-    let remainder = i17_rem(a, b);
-
-    return (quotient, remainder);
-}
-
-// Compares two i17 integers for equality.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `bool` - `true` if the two integers are equal, `false` otherwise.
-fn i17_eq(a: i17, b: i17) -> bool {
-    // Check if the two integers have the same sign and the same absolute value.
-    if a.sign == b.sign & a.inner == b.inner {
-        return true;
-    }
-
-    return false;
-}
-
-// Compares two i17 integers for inequality.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `bool` - `true` if the two integers are not equal, `false` otherwise.
-fn i17_ne(a: i17, b: i17) -> bool {
-    // The result is the inverse of the equal function.
-    return !i17_eq(a, b);
-}
-
-// Implements the PartialEq trait for i17.
-impl i17PartialEq of PartialEq::<i17> {
-    fn eq(a: i17, b: i17) -> bool {
-        i17_eq(a, b)
-    }
-
-    fn ne(a: i17, b: i17) -> bool {
-        i17_ne(a, b)
-    }
-}
-
-// Compares two i17 integers for greater than.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is greater than `b`, `false` otherwise.
-fn i17_gt(a: i17, b: i17) -> bool {
-    // Check if `a` is negative and `b` is positive.
-    if (a.sign & !b.sign) {
-        return false;
-    }
-    // Check if `a` is positive and `b` is negative.
-    if (!a.sign & b.sign) {
-        return true;
-    }
-    // If `a` and `b` have the same sign, compare their absolute values.
-    if (a.sign & b.sign) {
-        return a.inner < b.inner;
-    } else {
-        return a.inner > b.inner;
-    }
-}
-
-// Determines whether the first i17 is less than the second i17.
-// # Arguments
-// * `a` - The i17 to compare against the second i17.
-// * `b` - The i17 to compare against the first i17.
-// # Returns
-// * `bool` - `true` if `a` is less than `b`, `false` otherwise.
-fn i17_lt(a: i17, b: i17) -> bool {
-    // The result is the inverse of the greater than function.
-    return !i17_gt(a, b);
-}
-
-// Checks if the first i17 integer is less than or equal to the second.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is less than or equal to `b`, `false` otherwise.
-fn i17_le(a: i17, b: i17) -> bool {
-    if (a == b | i17_lt(a, b) == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Checks if the first i17 integer is greater than or equal to the second.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `bool` - `true` if `a` is greater than or equal to `b`, `false` otherwise.
-fn i17_ge(a: i17, b: i17) -> bool {
-    if (a == b | i17_gt(a, b) == true) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-// Implements the PartialOrd trait for i17.
-impl i17PartialOrd of PartialOrd::<i17> {
-    fn le(a: i17, b: i17) -> bool {
-        i17_le(a, b)
-    }
-    fn ge(a: i17, b: i17) -> bool {
-        i17_ge(a, b)
-    }
-
-    fn lt(a: i17, b: i17) -> bool {
-        i17_lt(a, b)
-    }
-    fn gt(a: i17, b: i17) -> bool {
-        i17_gt(a, b)
-    }
-}
-
-// Negates the given i17 integer.
-// # Arguments
-// * `x` - The i17 integer to negate.
-// # Returns
-// * `i17` - The negation of `x`.
-fn i17_neg(x: i17) -> i17 {
-    // The negation of an integer is obtained by flipping its sign.
-    return i17 { inner: x.inner, sign: !x.sign };
-}
-
-// Implements the Neg trait for i17.
-impl i17Neg of Neg::<i17> {
-    fn neg(x: i17) -> i17 {
-        i17_neg(x)
-    }
-}
-
-// Computes the absolute value of the given i17 integer.
-// # Arguments
-// * `x` - The i17 integer to compute the absolute value of.
-// # Returns
-// * `i17` - The absolute value of `x`.
-fn i17_abs(x: i17) -> i17 {
-    return i17 { inner: x.inner, sign: false };
-}
-
-// Computes the maximum between two i17 integers.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `i17` - The maximum between `a` and `b`.
-fn i17_max(a: i17, b: i17) -> i17 {
-    if (a > b) {
-        return a;
-    } else {
-        return b;
-    }
-}
-
-// Computes the minimum between two i17 integers.
-// # Arguments
-// * `a` - The first i17 integer to compare.
-// * `b` - The second i17 integer to compare.
-// # Returns
-// * `i17` - The minimum between `a` and `b`.
-fn i17_min(a: i17, b: i17) -> i17 {
-    if (a < b) {
-        return a;
-    } else {
-        return b;
-    }
-}
-
-
 // ====================== INT 33 ======================
+use cairo_ml::utils::u32_to_u64;
+use cairo_ml::utils::u64_to_u128;
+use cairo_ml::utils::i65_to_i33;
+use cairo_ml::utils::i33_to_i65;
+use cairo_ml::utils::i129_to_i65;
+use debug::print_felt;
+use traits::Into;
 
 // i33 represents a 33-bit integer.
 // The inner field holds the absolute value of the integer.
@@ -1081,7 +247,7 @@ impl i33RemEq of RemEq::<i33> {
 // * `b` - The i33 divisor.
 // # Returns
 // * `(i33, i33)` - A tuple containing the quotient and the remainder of dividing `a` by `b`.
-fn i33_div_rem(a: i33, b: i33) -> (i33, i33) {
+fn div_rem(a: i33, b: i33) -> (i33, i33) {
     let quotient = i33_div(a, b);
     let remainder = i33_rem(a, b);
 
@@ -1256,6 +422,191 @@ fn i33_min(a: i33, b: i33) -> i33 {
     } else {
         return b;
     }
+}
+
+// Raise a i33 to a power.
+// # Arguments
+/// * `base` - The number to raise.
+/// * `exp` - The exponent.
+/// # Returns
+/// * `i33` - The result of base raised to the power of exp.
+fn i33_power(base: i33, exp: u32) -> i33 {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (exp == 0_u32) {
+        return i33 { inner: 1_u32, sign: false };
+    } else {
+        return base * i33_power(base, exp - 1_u32);
+    }
+}
+
+// Calculate the two's complement representation of a negative number 
+fn i33_twos_compl(integer: i33) -> u64 {
+    if (integer.sign == false) {
+        return u32_to_u64(integer.inner);
+    }
+
+    let mut complement = 1_u64;
+
+    __i33_twos_compl(integer, ref complement, 0_u8);
+
+    return complement - u32_to_u64(integer.inner);
+}
+
+fn __i33_twos_compl(integer: i33, ref complement: u64, n: u8) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == 31_u8) {
+        return ();
+    }
+
+    complement = complement * 2_u64;
+
+    __i33_twos_compl(integer, ref complement, n + 1_u8);
+}
+
+fn twos_compl_to_i33(value: u64) -> i33 {
+    let max_positive = i65 { inner: 2147483648_u64, sign: false };
+    let i65_value = i65 { inner: value, sign: false };
+    let two = i65 { inner: 2_u64, sign: false };
+
+    if (i65_value >= max_positive / two) {
+        return i65_to_i33(i65_value - max_positive);
+    }
+
+    return i65_to_i33(i65_value);
+}
+
+fn i33_bitxor(a: i33, b: i33) -> i33 {
+    let a_twos_compl = i33_twos_compl(a);
+    let b_twos_compl = i33_twos_compl(b);
+    let power_of_two = 1_u64;
+    let mut result_compl = 0_u64;
+
+    __i33_bitxor(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i33(result_compl);
+}
+
+fn __i33_bitxor(a: u64, b: u64, power_of_two: u64, ref result: u64) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (a == 0_u64 & b == 0_u64) {
+        return ();
+    }
+
+    let a_bit = a % 2_u64;
+    let b_bit = b % 2_u64;
+
+    let xor_bit = (a_bit + b_bit) % 2_u64;
+    result = result + (xor_bit * power_of_two);
+
+    __i33_bitxor(a / 2_u64, b / 2_u64, power_of_two * 2_u64, ref result);
+}
+
+impl i33BitXor of BitXor::<i33> {
+    fn bitxor(a: i33, b: i33) -> i33 {
+        i33_bitxor(a, b)
+    }
+}
+
+fn i33_bitand(a: i33, b: i33) -> i33 {
+    let a_twos_compl = i33_twos_compl(a);
+    let b_twos_compl = i33_twos_compl(b);
+    let power_of_two = 1_u64;
+    let mut result_compl = 0_u64;
+
+    __i33_bitand(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i33(result_compl);
+}
+
+fn __i33_bitand(a: u64, b: u64, power_of_two: u64, ref result: u64) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // ---End recursion---
+    if (a == 0_u64 & b == 0_u64) {
+        return ();
+    }
+
+    let a_bit = a % 2_u64;
+    let b_bit = b % 2_u64;
+
+    let and_bit = a_bit * b_bit;
+    result = result + (and_bit * power_of_two);
+
+    __i33_bitand(a / 2_u64, b / 2_u64, power_of_two * 2_u64, ref result);
+}
+
+impl i33BitAnd of BitAnd::<i33> {
+    fn bitand(a: i33, b: i33) -> i33 {
+        i33_bitand(a, b)
+    }
+}
+
+fn left_shit(value: i33, shift_amount: u64) -> i33 {
+    let value_i65 = i33_to_i65(value);
+    let mut result = i33_to_i65(value);
+
+    let two = i65 { inner: 2_u64, sign: false };
+    let mask = i65_power(two, 32_u64) - i65 { inner: 1_u64, sign: false };
+
+    // Get the two's complement of the negative value.
+    if (value.sign == true) {
+        result = (i65 { inner: value_i65.inner, sign: false } ^ mask) + i65 {
+            inner: 1_u64, sign: false
+        };
+    }
+
+    result = result * i65_power(two, shift_amount);
+
+    // Check for overflow and limit result to bit_width bits.
+    result = result & mask;
+
+    let is_negative = result & i65_power(two, 32_u64 - 1_u64);
+
+    // If the result is negative, convert it back to two's complement.
+    if (is_negative.inner == 2147483648_u64) {
+        result = -((result ^ mask)) - i65 { inner: 1_u64, sign: false };
+    }
+
+    return i65_to_i33(result);
 }
 
 // ====================== INT 65 ======================
@@ -1677,6 +1028,161 @@ fn i65_min(a: i65, b: i65) -> i65 {
     }
 }
 
+// Raise a i65 to a power.
+// # Arguments
+/// * `base` - The number to raise.
+/// * `exp` - The exponent.
+/// # Returns
+/// * `i65` - The result of base raised to the power of exp.
+fn i65_power(base: i65, exp: u64) -> i65 {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (exp == 0_u64) {
+        return i65 { inner: 1_u64, sign: false };
+    } else {
+        return base * i65_power(base, exp - 1_u64);
+    }
+}
+
+// Calculate the two's complement representation of a negative number 
+fn i65_twos_compl(integer: i65) -> u128 {
+    if (integer.sign == false) {
+        return u64_to_u128(integer.inner);
+    }
+
+    let mut complement = 1_u128;
+
+    __i65_twos_compl(integer, ref complement, 0_u8);
+
+    return complement - u64_to_u128(integer.inner);
+}
+
+fn __i65_twos_compl(integer: i65, ref complement: u128, n: u8) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (n == 31_u8) {
+        return ();
+    }
+
+    complement = complement * 2_u128;
+
+    __i65_twos_compl(integer, ref complement, n + 1_u8);
+}
+
+fn twos_compl_to_i65(value: u128) -> i65 {
+    let max_positive = i129 { inner: 9223372036854775808_u128, sign: false };
+    let i129_value = i129 { inner: value, sign: false };
+    let two = i129 { inner: 2_u128, sign: false };
+
+    if (i129_value >= max_positive / two) {
+        return i129_to_i65(i129_value - max_positive);
+    }
+
+    return i129_to_i65(i129_value);
+}
+
+fn i65_bitxor(a: i65, b: i65) -> i65 {
+    let a_twos_compl = i65_twos_compl(a);
+    let b_twos_compl = i65_twos_compl(b);
+    let power_of_two = 1_u128;
+    let mut result_compl = 0_u128;
+
+    __i65_bitxor(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i65(result_compl);
+}
+
+fn __i65_bitxor(a: u128, b: u128, power_of_two: u128, ref result: u128) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    if (a == 0_u128 & b == 0_u128) {
+        return ();
+    }
+
+    let a_bit = a % 2_u128;
+    let b_bit = b % 2_u128;
+
+    let xor_bit = (a_bit + b_bit) % 2_u128;
+    result = result + (xor_bit * power_of_two);
+
+    __i65_bitxor(a / 2_u128, b / 2_u128, power_of_two * 2_u128, ref result);
+}
+
+impl i65BitXor of BitXor::<i65> {
+    fn bitxor(a: i65, b: i65) -> i65 {
+        i65_bitxor(a, b)
+    }
+}
+
+fn i65_bitand(a: i65, b: i65) -> i65 {
+    let a_twos_compl = i65_twos_compl(a);
+    let b_twos_compl = i65_twos_compl(b);
+    let power_of_two = 1_u128;
+    let mut result_compl = 0_u128;
+
+    __i65_bitand(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i65(result_compl);
+}
+
+fn __i65_bitand(a: u128, b: u128, power_of_two: u128, ref result: u128) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // ---End recursion---
+    if (a == 0_u128 & b == 0_u128) {
+        return ();
+    }
+
+    let a_bit = a % 2_u128;
+    let b_bit = b % 2_u128;
+
+    let and_bit = a_bit * b_bit;
+    result = result + (and_bit * power_of_two);
+
+    __i65_bitand(a / 2_u128, b / 2_u128, power_of_two * 2_u128, ref result);
+}
+
+impl i65BitAnd of BitAnd::<i65> {
+    fn bitand(a: i65, b: i65) -> i65 {
+        i65_bitand(a, b)
+    }
+}
 
 // ====================== INT 129 ======================
 
