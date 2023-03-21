@@ -5,7 +5,9 @@ use cairo_ml::math::signed_integers::div_rem;
 use cairo_ml::math::signed_integers::i33_power;
 use cairo_ml::math::signed_integers::i33_twos_compl;
 use cairo_ml::math::signed_integers::twos_compl_to_i33;
-use cairo_ml::math::signed_integers::i33_left_shit;
+use cairo_ml::math::signed_integers::i33_left_shift;
+use cairo_ml::math::signed_integers::i33_right_shift;
+
 
 use debug::print_felt;
 use traits::Into;
@@ -427,23 +429,69 @@ fn bitand_test() {
     let b = i33 { inner: 7_u32, sign: true };
     let result = a & b;
 
-    assert(result.inner == 15_u32, '(-13)^(-7) = -15');
-    assert(result.sign == true, '(-13)^(-7) = -15');
+    assert(result.inner == 15_u32, '(-13)&(-7) = -15');
+    assert(result.sign == true, '(-13)&(-7) = -15');
 }
 
 #[test]
 #[available_gas(200000000)]
-fn left_shit_test() {
+fn bitor_test() {
+    let a = i33 { inner: 13_u32, sign: false };
+    let b = i33 { inner: 7_u32, sign: false };
+    let result = a | b;
+
+    assert(result.inner == 15_u32, '13 | 7 = 15');
+    assert(result.sign == false, '13 | 7 = 15');
+
+    let a = i33 { inner: 13_u32, sign: true };
+    let b = i33 { inner: 7_u32, sign: false };
+    let result = a | b;
+
+    assert(result.inner == 9_u32, '(-13) | 7 = -9');
+    assert(result.sign == true, '(-13) | 7 = -9');
+
+    let a = i33 { inner: 13_u32, sign: false };
+    let b = i33 { inner: 7_u32, sign: true };
+    let result = a | b;
+
+    assert(result.inner == 3_u32, '13 | (-7) = -3');
+    assert(result.sign == true, '13 | (-7) = -3');
+
+    let a = i33 { inner: 13_u32, sign: true };
+    let b = i33 { inner: 7_u32, sign: true };
+    let result = a | b;
+
+    assert(result.inner == 5_u32, '(-13)|(-7) = -5');
+    assert(result.sign == true, '(-13)|(-7) = -5');
+}
+
+#[test]
+#[available_gas(200000000)]
+fn left_shift_test() {
     let x = i33 { inner: 42_u32, sign: false };
-    let res = i33_left_shit(x, 8_u64);
+    let res = i33_left_shift(x, 8_u64);
     assert(res.inner == 10752_u32, '42 << 8 = 10752 ');
     assert(res.sign == false, '42 << 8 = 10752');
 
     let x = i33 { inner: 42_u32, sign: true };
-    let res = i33_left_shit(x, 8_u64);
+    let res = i33_left_shift(x, 8_u64);
 
     assert(res.inner == 10752_u32, '-42 << 8 = - 10752');
     assert(res.sign == true, '-42 << 8 = - 10752');
+}
+
+#[test]
+#[available_gas(200000000)]
+fn right_shift_test() {
+    let x = i33 { inner: 10752_u32, sign: false };
+    let res = i33_right_shift(x, 8_u64);
+    assert(res.inner == 42_u32, '10752 >> 8 = 42 ');
+    assert(res.sign == false, '10752 >> 8 = 42');
+
+    let x = i33 { inner: 10752_u32, sign: true };
+    let res = i33_right_shift(x, 8_u64);
+    assert(res.inner == 42_u32, '-10752 >> 8 = - 42');
+    assert(res.sign == true, '-10752 >> 8 = - 42');
 }
 
 #[test]

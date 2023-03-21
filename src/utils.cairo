@@ -47,3 +47,37 @@ fn i129_to_i65(a: i129) -> i65 {
     return i65 { inner: inner, sign: a.sign };
 }
 
+fn max_u64(a: u64, b: u64) -> u64 {
+    if a > b {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+fn min_u64(a: u64, b: u64) -> u64 {
+    if a < b {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+fn max_u128(a: u128, b: u128) -> u128 {
+    if a > b {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+fn min_u128(a: u128, b: u128) -> u128 {
+    if a < b {
+        return a;
+    } else {
+        return b;
+    }
+}
+
+
+

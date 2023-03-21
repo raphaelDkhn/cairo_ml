@@ -36,6 +36,17 @@ fn fixed_point_sub() {
 
 #[test]
 #[available_gas(200000000)]
+fn fixed_point_mul() {
+    let a = from_i33(i33 { inner: 42_u32, sign: false }, 8_u64);
+    let b = from_i33(i33 { inner: 5_u32, sign: false }, 8_u64);
+
+    let mul = a * b;
+    assert(mul.raw_value.inner == 53760_u32, 'a * b = 53760');
+}
+
+
+#[test]
+#[available_gas(200000000)]
 fn fixed_point_div() {
     let a = from_i33(i33 { inner: 42_u32, sign: false }, 8_u64);
     let b = from_i33(i33 { inner: 5_u32, sign: false }, 8_u64);

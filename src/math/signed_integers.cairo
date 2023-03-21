@@ -4,6 +4,8 @@ use cairo_ml::utils::u64_to_u128;
 use cairo_ml::utils::i65_to_i33;
 use cairo_ml::utils::i33_to_i65;
 use cairo_ml::utils::i129_to_i65;
+use cairo_ml::utils::max_u64;
+use cairo_ml::utils::max_u128;
 use debug::print_felt;
 use traits::Into;
 
@@ -580,7 +582,50 @@ impl i33BitAnd of BitAnd::<i33> {
     }
 }
 
-fn i33_left_shit(value: i33, shift_amount: u64) -> i33 {
+fn i33_bitor(a: i33, b: i33) -> i33 {
+    let a_twos_compl = i33_twos_compl(a);
+    let b_twos_compl = i33_twos_compl(b);
+    let power_of_two = 1_u64;
+    let mut result_compl = 0_u64;
+
+    __i33_bitor(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i33(result_compl);
+}
+
+fn __i33_bitor(a: u64, b: u64, power_of_two: u64, ref result: u64) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // ---End recursion---
+    if (a == 0_u64 & b == 0_u64) {
+        return ();
+    }
+
+    let a_bit = a % 2_u64;
+    let b_bit = b % 2_u64;
+
+    let or_bit = max_u64(a_bit, b_bit);
+    result = result + (or_bit * power_of_two);
+
+    __i33_bitor(a / 2_u64, b / 2_u64, power_of_two * 2_u64, ref result);
+}
+
+impl i33BitOr of BitOr::<i33> {
+    fn bitor(a: i33, b: i33) -> i33 {
+        i33_bitor(a, b)
+    }
+}
+
+fn i33_left_shift(value: i33, shift_amount: u64) -> i33 {
     let value_i65 = i33_to_i65(value);
     let mut result = i33_to_i65(value);
 
@@ -594,17 +639,48 @@ fn i33_left_shit(value: i33, shift_amount: u64) -> i33 {
         };
     }
 
-    result = result * i65_power(two, shift_amount);
+    result *= i65_power(two, shift_amount);
 
     // Check for overflow and limit result to bit_width bits.
     result = result & mask;
-   // print_felt(result.inner.into());
 
     let is_negative = result & i65_power(two, 32_u64 - 1_u64);
 
     // If the result is negative, convert it back to two's complement.
     if (is_negative.inner == 2147483648_u64) {
         result = -((result ^ mask)) - i65 { inner: 1_u64, sign: false };
+    }
+
+    return i65_to_i33(result);
+}
+
+fn i33_right_shift(value: i33, shift_amount: u64) -> i33 {
+    let value_i65 = i33_to_i65(value);
+    let mut result = i33_to_i65(value);
+
+    let two = i65 { inner: 2_u64, sign: false };
+
+    let negative = value.sign == true;
+
+    if negative {
+        result = (i65 { inner: value_i65.inner, sign: false } ^ i65_mask(32_u64)) + i65 {
+            inner: 1_u64, sign: false
+        };
+    }
+
+    result /= i65_power(two, shift_amount);
+
+    if negative {
+        result = result | (i65_mask(32_u64) ^ i65_mask(32_u64 - shift_amount));
+    }
+
+    let two_complement_negative = result & i65_power(two, 32_u64 - 1_u64);
+
+    // If the result is negative, convert it back to two's complement.
+    if (two_complement_negative.inner == 2147483648_u64) {
+        result = ((result ^ i65_mask(32_u64)) + i65 { inner: 1_u64, sign: false }) * i65 {
+            inner: 1_u64, sign: true
+        };
     }
 
     return i65_to_i33(result);
@@ -1183,6 +1259,53 @@ impl i65BitAnd of BitAnd::<i65> {
     fn bitand(a: i65, b: i65) -> i65 {
         i65_bitand(a, b)
     }
+}
+
+fn i65_bitor(a: i65, b: i65) -> i65 {
+    let a_twos_compl = i65_twos_compl(a);
+    let b_twos_compl = i65_twos_compl(b);
+    let power_of_two = 1_u128;
+    let mut result_compl = 0_u128;
+
+    __i65_bitor(a_twos_compl, b_twos_compl, power_of_two, ref result_compl);
+
+    return twos_compl_to_i65(result_compl);
+}
+
+fn __i65_bitor(a: u128, b: u128, power_of_two: u128, ref result: u128) {
+    // --- Check if out of gas ---
+    // TODO: Remove when automatically handled by compiler.
+    match gas::get_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // ---End recursion---
+    if (a == 0_u128 & b == 0_u128) {
+        return ();
+    }
+
+    let a_bit = a % 2_u128;
+    let b_bit = b % 2_u128;
+
+    let or_bit = max_u128(a_bit, b_bit);
+    result = result + (or_bit * power_of_two);
+
+    __i65_bitor(a / 2_u128, b / 2_u128, power_of_two * 2_u128, ref result);
+}
+
+impl i65BitOr of BitOr::<i65> {
+    fn bitor(a: i65, b: i65) -> i65 {
+        i65_bitor(a, b)
+    }
+}
+
+fn i65_mask(bit_width: u64) -> i65 {
+    i65_power(i65 { inner: 2_u64, sign: false }, bit_width) - i65 { inner: 1_u64, sign: false }
 }
 
 // ====================== INT 129 ======================

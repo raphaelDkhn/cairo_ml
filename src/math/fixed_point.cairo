@@ -2,7 +2,8 @@
 
 use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33;
-use cairo_ml::math::signed_integers::i33_left_shit;
+use cairo_ml::math::signed_integers::i33_left_shift;
+use cairo_ml::math::signed_integers::i33_right_shift;
 
 use debug::print_felt;
 use traits::Into;
@@ -15,7 +16,7 @@ struct FixedPoint {
 
 
 fn from_i33(value: i33, fractional_bits: u64) -> FixedPoint {
-    let scale_factor = i33_left_shit(i33 { inner: 1_u32, sign: false }, fractional_bits);
+    let scale_factor = i33_left_shift(i33 { inner: 1_u32, sign: false }, fractional_bits);
     let raw_value = value * scale_factor;
     return FixedPoint { raw_value: raw_value, fractional_bits: fractional_bits };
 }
@@ -63,11 +64,26 @@ fn __sub__(a: FixedPoint, b: FixedPoint) -> FixedPoint {
     FixedPoint { raw_value: sub, fractional_bits: a.fractional_bits }
 }
 
-// fn __mul__(a: FixedPoint, b: FixedPoint) -> FixedPoint {
-//     assert(a.fractional_bits == b.fractional_bits, 'fractional bits do not match');
-//     let mul = a.raw_value - b.raw_value;
-//      FixedPoint { raw_value: mul, fractional_bits: a.fractional_bits }
-// }
+// Implements the Mul trait for FixedPoint.
+impl FixedPointMul of Mul::<FixedPoint> {
+    fn mul(a: FixedPoint, b: FixedPoint) -> FixedPoint {
+        __mul__(a, b)
+    }
+}
+
+// Implements the MulEq trait for FixedPoint.
+impl FixedPointMulEq of MulEq::<FixedPoint> {
+    #[inline(always)]
+    fn mul_eq(ref self: FixedPoint, other: FixedPoint) {
+        self = Mul::mul(self, other);
+    }
+}
+
+fn __mul__(a: FixedPoint, b: FixedPoint) -> FixedPoint {
+    assert(a.fractional_bits == b.fractional_bits, 'fractional bits do not match');
+    let mul = i33_right_shift(a.raw_value * b.raw_value, a.fractional_bits);
+    FixedPoint { raw_value: mul, fractional_bits: a.fractional_bits }
+}
 
 // Implements the Div trait for FixedPoint.
 impl FixedPointDiv of Div::<FixedPoint> {
@@ -87,6 +103,6 @@ impl FixedPointDivEq of DivEq::<FixedPoint> {
 fn __div__(a: FixedPoint, b: FixedPoint) -> FixedPoint {
     assert(a.fractional_bits == b.fractional_bits, 'fractional bits do not match');
 
-    let div = i33_left_shit(a.raw_value, a.fractional_bits) / b.raw_value;
+    let div = i33_left_shift(a.raw_value, a.fractional_bits) / b.raw_value;
     FixedPoint { raw_value: div, fractional_bits: a.fractional_bits }
 }
