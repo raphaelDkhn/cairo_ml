@@ -4,9 +4,7 @@ use cairo_ml::math::vector::sum_two_vec;
 use cairo_ml::math::signal::valid_correlate_2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
-
-impl Arrayi33Drop of Drop::<Array::<i33>>;
-impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
+use cairo_ml::utils::check_gas;
 
 // 2D convolution layer.
 // # Arguments
@@ -33,17 +31,7 @@ fn __conv2d(
     ref outputs: Array::<Matrix>,
     n: usize,
 ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
-
+    check_gas();
     // --- End of the recursion ---
     if n == kernels.len() {
         return ();
@@ -71,16 +59,7 @@ fn conv2d_by_kernel(
     ref output: Matrix,
     n: usize
 ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     // --- End of the recursion ---
     if n == kernel.len() {

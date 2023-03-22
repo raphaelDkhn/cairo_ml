@@ -3,8 +3,7 @@ use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33_min;
 use cairo_ml::math::signed_integers::i33_max;
 use cairo_ml::math::signed_integers::i33;
-
-impl Arrayi33Drop of Drop::<Array::<i33>>;
+use cairo_ml::utils::check_gas;
 
 //=================================================//
 //=================== SUM VECTORS =================//
@@ -30,16 +29,7 @@ fn sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> Array::<i33> {
 }
 
 fn __sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, ref result: Array::<i33>, n: usize, ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     // --- End of the recursion ---
     if n == vec1.len() {
@@ -76,16 +66,7 @@ fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
 }
 
 fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, index: usize, mut sum: i33) -> i33 {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     if index == vec1.len() {
         sum
@@ -114,16 +95,8 @@ fn find_min_max(ref vec: Array::<i33>) -> (i33, i33) {
 }
 
 fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33, n: usize, ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
+
     // --- End of the recursion ---
     if n == vec.len() {
         return ();
@@ -164,16 +137,7 @@ fn slice_vec(vec: @Array::<i33>, start_index: usize, end_index: usize) -> Array:
 }
 
 fn __slice_vec(vec: @Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     if (n == end_index) {
         return ();
@@ -201,16 +165,7 @@ fn concat_vectors(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
 }
 
 fn __concat_vectors(vec: Array::<i33>, ref result: Array::<i33>, n: usize) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     if (n == vec.len()) {
         return ();

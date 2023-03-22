@@ -5,8 +5,6 @@ use cairo_ml::math::matrix::matrix_dot_vec;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::performance::quantizations::quant_vec;
 
-impl Arrayi33Drop of Drop::<Array::<i33>>;
-
 //  Linear layer.
 // # Arguments
 // * inputs - An Array of i33 integers representing the input vector.

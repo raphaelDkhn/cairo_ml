@@ -3,6 +3,7 @@ use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
+use cairo_ml::utils::check_gas;
 
 //TODO improve memory
 fn relu(matrix: @Matrix) -> Matrix {
@@ -15,16 +16,7 @@ fn relu(matrix: @Matrix) -> Matrix {
 }
 
 fn __relu(matrix: @Matrix, ref result: Array::<i33>, n: usize) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     if (n == matrix.data.len()) {
         return ();

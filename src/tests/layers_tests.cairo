@@ -5,10 +5,6 @@ use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::signed_integers::i33;
 
-impl Arrayi33Drop of Drop::<Array::<i33>>;
-impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
-impl ArrayOfArrayMatrixDrop of Drop::<Array::<Array::<Matrix>>>;
-
 
 #[test]
 #[available_gas(2000000)]

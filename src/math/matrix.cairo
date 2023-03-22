@@ -3,11 +3,9 @@ use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::vector::slice_vec;
 use cairo_ml::math::vector::concat_vectors;
+use cairo_ml::utils::check_gas;
 
-impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl Arrayi33Copy of Copy::<Array::<i33>>;
-impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
-impl ArrayMatrixCopy of Copy::<Array::<Matrix>>;
 
 #[derive(Copy, Drop)]
 struct Matrix {
@@ -53,16 +51,7 @@ fn matrix_dot_vec(matrix: @Matrix, vector: Array::<i33>) -> (Array::<i33>) {
 fn __matrix_dot_vec(
     matrix: @Matrix, ref vector: Array::<i33>, ref result: Array::<i33>, row: usize
 ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     // --- End of the recursion ---
     if row == *matrix.rows {
@@ -80,16 +69,7 @@ fn __matrix_dot_vec(
 }
 
 fn row_dot_vec(matrix: @Matrix, ref vector: Array::<i33>, row: usize, current_col: usize) -> i33 {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     // --- End of the recursion ---
     if (current_col == *matrix.cols) {
@@ -117,9 +97,11 @@ fn row_dot_vec(matrix: @Matrix, ref vector: Array::<i33>, row: usize, current_co
 // * start_index - The index of the starting element of the slice in the row-major order.
 // # Returns
 // * Matrix - The new Matrix created by slicing the original Matrix with the specified dimensions.
-fn slice_matrix(matrix: @Matrix, slicer: (usize, usize), start_index: usize) -> Matrix {
+fn slice_matrix(
+    matrix: @Matrix, slicer_rows: usize, slicer_cols: usize, start_index: usize
+) -> Matrix {
     // Initialize variables.
-    let (slicer_rows, slicer_cols) = slicer;
+    //let (slicer_rows, slicer_cols) = slicer;
     let start_row = start_index / *matrix.cols;
     let start_col = start_index % *matrix.cols;
     let end_row = start_row + slicer_rows;
@@ -133,16 +115,7 @@ fn slice_matrix(matrix: @Matrix, slicer: (usize, usize), start_index: usize) -> 
 fn __slice_matrix(
     matrix: @Matrix, start_row: usize, start_col: usize, end_row: usize, end_col: usize
 ) -> Array::<i33> {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     let row_start = start_row * *matrix.cols;
     let row_end = row_start + *matrix.cols;

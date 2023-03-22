@@ -3,8 +3,6 @@ use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::activations::relu::relu;
 
-impl Arrayi33Drop of Drop::<Array::<i33>>;
-
 #[test]
 #[available_gas(2000000)]
 fn relu_tests() {

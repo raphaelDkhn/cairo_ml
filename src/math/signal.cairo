@@ -4,8 +4,7 @@ use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::vector::vec_dot_vec;
-
-impl Arrayi33Drop of Drop::<Array::<i33>>;
+use cairo_ml::utils::check_gas;
 
 // =================================================//
 // ================ CROSS CORELATION ===============//
@@ -37,26 +36,15 @@ fn valid_correlate_2d(input: @Matrix, kernel: @Matrix) -> Matrix {
 fn __valid_correlate_2d(
     input: @Matrix, kernel: @Matrix, ref output_data: Array::<i33>, n: usize, max_index: usize
 ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     let col_index = n % *input.cols;
-
     // --- End of the recursion ---
     if (n >= max_index) {
         return ();
     }
-
     // --- Slice Input ---
-    let mut sliced_input = slice_matrix(input, (*kernel.rows, *kernel.cols), n);
+    let mut sliced_input = slice_matrix(input, *kernel.rows, *kernel.cols, n);
 
     // --- Dot product ---
     let dot = vec_dot_vec(@sliced_input.data, kernel.data);

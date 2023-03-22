@@ -8,8 +8,7 @@ use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::signed_integers::i33_max;
 use cairo_ml::math::signed_integers::i33_abs;
 use cairo_ml::math::vector::find_min_max;
-
-impl Arrayi33Drop of Drop::<Array::<i33>>;
+use cairo_ml::utils::check_gas;
 
 // Performs 8-bit symmetric quantization on an integer.
 // # Arguments
@@ -64,16 +63,7 @@ fn quant_vec(ref vec: Array::<i33>) -> Array::<i33> {
 fn __quant_vec(
     ref min_val: i33, ref max_val: i33, ref vec: Array::<i33>, ref result: Array::<i33>, n: usize
 ) {
-    // --- Check if out of gas ---
-    // TODO: Remove when automatically handled by compiler.
-    match gas::get_gas() {
-        Option::Some(_) => {},
-        Option::None(_) => {
-            let mut data = array_new::<felt>();
-            array_append::<felt>(ref data, 'OOG');
-            panic(data);
-        },
-    }
+    check_gas();
 
     // --- End of the recursion ---
     if n == vec.len() {
