@@ -3,6 +3,8 @@ use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::signal::valid_correlate_2d;
 
+impl Arrayi33Drop of Drop::<Array::<i33>>;
+
 #[test]
 #[available_gas(2000000)]
 fn valid_correlate_2d_test() {

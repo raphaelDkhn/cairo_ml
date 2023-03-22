@@ -3,7 +3,7 @@ use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33_min;
 use cairo_ml::math::signed_integers::i33_max;
 use cairo_ml::math::signed_integers::i33;
-use cairo_ml::utils::check_gas;
+
 
 //=================================================//
 //=================== SUM VECTORS =================//
@@ -29,7 +29,15 @@ fn sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> Array::<i33> {
 }
 
 fn __sum_two_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, ref result: Array::<i33>, n: usize, ) {
-    check_gas();
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
 
     // --- End of the recursion ---
     if n == vec1.len() {
@@ -66,7 +74,15 @@ fn vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>) -> i33 {
 }
 
 fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, index: usize, mut sum: i33) -> i33 {
-    check_gas();
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
 
     if index == vec1.len() {
         sum
@@ -95,7 +111,15 @@ fn find_min_max(ref vec: Array::<i33>) -> (i33, i33) {
 }
 
 fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33, n: usize, ) {
-    check_gas();
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
 
     // --- End of the recursion ---
     if n == vec.len() {
@@ -137,7 +161,15 @@ fn slice_vec(vec: @Array::<i33>, start_index: usize, end_index: usize) -> Array:
 }
 
 fn __slice_vec(vec: @Array::<i33>, end_index: usize, ref result: Array::<i33>, n: usize) {
-    check_gas();
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
 
     if (n == end_index) {
         return ();
@@ -165,7 +197,15 @@ fn concat_vectors(vec1: Array::<i33>, vec2: Array::<i33>) -> Array::<i33> {
 }
 
 fn __concat_vectors(vec: Array::<i33>, ref result: Array::<i33>, n: usize) {
-    check_gas();
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
 
     if (n == vec.len()) {
         return ();

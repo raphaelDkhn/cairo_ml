@@ -10,9 +10,6 @@ The calculations are performed using `i33` values, and the outcomes are quantize
 
 Follow the [**`auditless/cairo-template`**](https://github.com/auditless/cairo-template) instructions.
 
-## Cairo Version
-- [Cairo](https://github.com/starkware-libs/cairo/releases/tag/v1.0.0-alpha.6) v1.0.0-alpha.6
-
 ## How to use it?
 
 ### Build

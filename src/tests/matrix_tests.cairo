@@ -5,6 +5,8 @@ use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::signed_integers::i33;
 
+impl Arrayi33Drop of Drop::<Array::<i33>>;
+
 #[test]
 #[available_gas(2000000)]
 fn dot_test() {
