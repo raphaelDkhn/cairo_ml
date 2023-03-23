@@ -18,6 +18,8 @@ use cairo_ml::fixed_point::core::FixedMul;
 use cairo_ml::fixed_point::core::FixedMulEq;
 use cairo_ml::fixed_point::core::FixedDiv;
 
+use debug::print_felt;
+
 #[test]
 fn test_into() {
     let a = Fixed::from_unscaled_felt(5);
@@ -58,19 +60,19 @@ fn test_abs() {
 
 #[test]
 fn test_ceil() {
-    let a = Fixed::from_felt(53495557813757699680); // 2.9
+    let a = Fixed::from_felt(194615506); // 2.9
     assert(a.ceil().into() == 3 * ONE, 'invalid pos decimal');
 }
 
 #[test]
 fn test_floor() {
-    let a = Fixed::from_felt(53495557813757699680); // 2.9
+    let a = Fixed::from_felt(194615506); // 2.9
     assert(a.floor().into() == 2 * ONE, 'invalid pos decimal');
 }
 
 #[test]
 fn test_round() {
-    let a = Fixed::from_felt(53495557813757699680); // 2.9
+    let a = Fixed::from_felt(194615506); // 2.9
     assert(a.round().into() == 3 * ONE, 'invalid pos decimal');
 }
 
@@ -99,14 +101,16 @@ fn test_pow() {
 #[available_gas(10000000)]
 fn test_exp() {
     let a = Fixed::from_unscaled_felt(2);
-    assert(a.exp().into() == 136304030830375888892, 'invalid exp of 2'); // 7.389056317241236
+
+    assert(a.exp().into() == 495871164, 'invalid exp of 2'); // 7.389056317241236
 }
 
 #[test]
 #[available_gas(10000000)]
 fn test_exp2() {
     let a = Fixed::from_unscaled_felt(2);
-    assert(a.exp2().into() == 73786968408486180064, 'invalid exp2 of 2'); // 3.99999957248 = 4
+
+    assert(a.exp2().into() == 268435428, 'invalid exp2 of 2'); // 3.99999957248 = 4
 }
 
 #[test]
@@ -120,14 +124,14 @@ fn test_ln() {
 #[available_gas(10000000)]
 fn test_log2() {
     let a = Fixed::from_unscaled_felt(32);
-    assert(a.log2().into() == 92233719587853510925, 'invalid log2'); // 4.99999995767848
+    assert(a.log2().into() == 335544129, 'invalid log2'); // 4.99999995767848
 }
 
 #[test]
 #[available_gas(10000000)]
 fn test_log10() {
     let a = Fixed::from_unscaled_felt(100);
-    assert(a.log10().into() == 36893487914963460128, 'invalid log10'); // 1.9999999873985543
+    assert(a.log10().into() == 134217717, 'invalid log10'); // 1.9999999873985543
 }
 
 #[test]
@@ -204,9 +208,9 @@ fn test_mul_eq() {
 #[test]
 fn test_div() {
     let a = Fixed::from_unscaled_felt(10);
-    let b = Fixed::from_felt(53495557813757699680); // 2.9
+    let b = Fixed::from_felt(194615706); // 2.9
     let c = a / b;
-    assert(c.into() == 63609462323136384890, 'invalid pos decimal'); // 3.4482758620689653
+    assert(c.into() == 231409875, 'invalid pos decimal'); // 3.4482758620689653
 }
 
 #[test]

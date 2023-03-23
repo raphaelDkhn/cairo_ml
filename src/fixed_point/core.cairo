@@ -1,3 +1,5 @@
+//Fixed Point Q5.26 -> https://github.com/tensorflow/tensorflow/blob/305fec9fddc3bdb5bb574a134b955bf4b07fd795/tensorflow/lite/kernels/internal/reference/softmax.h#L66
+
 use gas::try_fetch_gas;
 use option::OptionTrait;
 use result::ResultTrait;
@@ -11,12 +13,12 @@ use cairo_ml::fixed_point::math;
 const PRIME: felt = 3618502788666131213697322783095070105623107215331596699973092056135872020480;
 const HALF_PRIME: felt =
     1809251394333065606848661391547535052811553607665798349986546028067936010240;
-const ONE: felt = 18446744073709551616; // 2 ** 64
-const ONE_u128: u128 = 18446744073709551616_u128; // 2 ** 64
-const HALF: felt = 9223372036854775808; // 2 ** 63
-const HALF_u128: u128 = 9223372036854775808_u128; // 2 ** 63
-const WIDE_SHIFT_u128: u128 = 18446744073709551616_u128; // 2 ** 64
-const MAX_u128: u128 = 340282366920938463463374607431768211455_u128; // 2 ** 128 - 1
+const ONE: felt = 67108864; // 2 ** 26
+const ONE_u128: u128 = 67108864_u128; // 2 ** 26
+const HALF: felt = 33554432; // 2 ** 25
+const HALF_u128: u128 = 33554432_u128; // 2 ** 25
+const WIDE_SHIFT_u128: u128 = 67108864_u128; // 2 ** 26
+const MAX_u128: u128 = 2147483647_u128; // 2 ** 31 - 1
 
 // STRUCTS
 

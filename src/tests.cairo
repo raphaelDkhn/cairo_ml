@@ -6,3 +6,4 @@ mod layers_tests;
 mod signal_tests;
 mod activations_tests;
 mod fixed_point_core_tests;
+mod fixed_point_math_tests;

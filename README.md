@@ -65,6 +65,7 @@ $ make test
 
 ## Credits
 - Zacharie Cohen, for his help.
+- [cubit](https://github.com/influenceth/cubit) for the fixed point lib.
 - [circomlib-ml](https://github.com/socathie/circomlib-ml) for the inspiration.
 - [GuiltyGyoza](https://github.com/guiltygyoza/tiny-dnn-on-starknet) for the inspiration.
 - [Franalgaba](https://github.com/franalgaba/neural-network-cairo/tree/main/src) for the inspiration.

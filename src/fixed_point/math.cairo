@@ -58,7 +58,7 @@ fn eq(a: FixedType, b: FixedType) -> bool {
 
 // Calculates the natural exponent of x: e^x
 fn exp(a: FixedType) -> FixedType {
-    return exp2(Fixed::new(26613026195688644984_u128, false) * a);
+    return exp2(Fixed::new(96817625_u128, false) * a); // log2(e) * 2^26 ≈ 96817625
 }
 
 // Calculates the binary exponent of x: 2^x
@@ -71,12 +71,12 @@ fn exp2(a: FixedType) -> FixedType {
     let int_res = _pow_int(Fixed::new_unscaled(2_u128, false), int_part, false);
 
     // 1.069e-7 maximum error
-    let a1 = Fixed::new(18446742102121545016_u128, false);
-    let a2 = Fixed::new(12786448315833223256_u128, false);
-    let a3 = Fixed::new(4429795821981912136_u128, false);
-    let a4 = Fixed::new(1030550312125424568_u128, false);
-    let a5 = Fixed::new(164966079091297224_u128, false);
-    let a6 = Fixed::new(34983544691898416_u128, false);
+    let a1 = Fixed::new(67108857_u128, false);
+    let a2 = Fixed::new(46516828_u128, false);
+    let a3 = Fixed::new(16115503_u128, false);
+    let a4 = Fixed::new(3749120_u128, false);
+    let a5 = Fixed::new(600143_u128, false);
+    let a6 = Fixed::new(127269_u128, false);
 
     let frac_fixed = Fixed::new(frac_part, false);
     let r6 = a6 * frac_fixed;
@@ -133,7 +133,7 @@ fn le(a: FixedType, b: FixedType) -> bool {
 // Calculates the natural logarithm of x: ln(x)
 // self must be greater than zero
 fn ln(a: FixedType) -> FixedType {
-    return Fixed::new(12786308645202655660_u128, false) * log2(a); // ln(2) = 0.693...
+    return Fixed::new(46516320_u128, false) * log2(a); // ln(2) = 0.693...
 }
 
 // Calculates the binary logarithm of x: log2(x)
@@ -164,15 +164,15 @@ fn log2(a: FixedType) -> FixedType {
     let norm = a / divisor;
 
     // 4.233e-8 maximum error
-    let a1 = Fixed::new(63187350828072553424_u128, true);
-    let a2 = Fixed::new(150429590981271126408_u128, false);
-    let a3 = Fixed::new(184599081115266689944_u128, true);
-    let a4 = Fixed::new(171296190111888966192_u128, false);
-    let a5 = Fixed::new(110928274989790216568_u128, true);
-    let a6 = Fixed::new(48676798788932142400_u128, false);
-    let a7 = Fixed::new(13804762162529339368_u128, true);
-    let a8 = Fixed::new(2284550827067371376_u128, false);
-    let a9 = Fixed::new(167660832607149504_u128, true);
+    let a1 = Fixed::new(229874243_u128, true);
+    let a2 = Fixed::new(547259664_u128, false);
+    let a3 = Fixed::new(671567545_u128, true);
+    let a4 = Fixed::new(623171909_u128, false);
+    let a5 = Fixed::new(403554714_u128, true);
+    let a6 = Fixed::new(177085162_u128, false);
+    let a7 = Fixed::new(50221432_u128, true);
+    let a8 = Fixed::new(8311147_u128, false);
+    let a9 = Fixed::new(609947_u128, true);
 
     let r9 = a9 * norm;
     let r8 = (r9 + a8) * norm;
@@ -188,7 +188,7 @@ fn log2(a: FixedType) -> FixedType {
 // Calculates the base 10 log of x: log10(x)
 // self must be greater than zero
 fn log10(a: FixedType) -> FixedType {
-    return Fixed::new(5553023288523357132_u128, false) * log2(a); // log10(2) = 0.301...
+    return Fixed::new(20201781_u128, false) * log2(a); // log10(2) = 0.301...
 }
 
 fn lt(a: FixedType, b: FixedType) -> bool {

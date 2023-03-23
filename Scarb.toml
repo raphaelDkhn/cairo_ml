@@ -2,7 +2,7 @@
 name = "cairo_ml"
 version = "0.1.0"
 description = "Exploring Machine Learning in Cairo 1.0"
-homepage = "https://github.com/auditless/cairo-template"
+homepage = "https://github.com/raphaelDkhn/cairo_ml"
 
 # Uncomment if you want to use dependencies
 # Note: currently testing doesn't work with dependencies
