@@ -36,6 +36,7 @@ $ make test
 
 ### Activations
 - [x] ReLu
+- [x] Softmax
 
 ### Math
 
@@ -59,7 +60,6 @@ $ make test
 - [x] 8-bit symmetric quantization
 
 ## TODO
-- Activation layers
 - MNIST example
 - more
 
