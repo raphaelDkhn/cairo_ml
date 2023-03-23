@@ -4,8 +4,11 @@ use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
 
-
-//TODO improve memory
+//  ReLu.
+// # Arguments
+// * matrix - a reference to the matrix.
+// # Returns
+// * a matrix representing the result of the ReLu
 fn relu(matrix: @Matrix) -> Matrix {
     // Initialize variables.
     let mut arr = ArrayTrait::new();

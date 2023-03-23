@@ -18,8 +18,6 @@ use cairo_ml::fixed_point::core::FixedMul;
 use cairo_ml::fixed_point::core::FixedMulEq;
 use cairo_ml::fixed_point::core::FixedDiv;
 
-use debug::print_felt;
-
 #[test]
 fn test_into() {
     let a = Fixed::from_unscaled_felt(5);

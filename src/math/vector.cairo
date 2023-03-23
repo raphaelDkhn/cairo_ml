@@ -1,9 +1,14 @@
 use array::ArrayTrait;
+use option::OptionTrait;
+use traits::Into;
 use cairo_ml::math::signed_integers;
 use cairo_ml::math::signed_integers::i33_min;
 use cairo_ml::math::signed_integers::i33_max;
 use cairo_ml::math::signed_integers::i33;
-
+use cairo_ml::fixed_point::core;
+use cairo_ml::fixed_point::core::Fixed;
+use cairo_ml::fixed_point::core::FixedType;
+use cairo_ml::utils::u32_to_u128;
 
 //=================================================//
 //=================== SUM VECTORS =================//
@@ -213,4 +218,84 @@ fn __concat_vectors(vec: Array::<i33>, ref result: Array::<i33>, n: usize) {
 
     result.append(*vec.at(n));
     __concat_vectors(vec, ref result, n + 1_usize);
+}
+
+//=================================================//
+//=================== EXP OF VECTOR ===============//
+//=================================================//
+
+// Calculate the exponential of all elements in the input array
+// # Arguments
+// * vec - A reference to an Array of i33.
+// # Returns
+// * Array::<FixedType> - An Array of Fixed Point containing the exp values.
+fn vec_exp(vec: @Array::<i33>) -> Array::<FixedType> {
+    // Initialize variables.
+    let mut result = ArrayTrait::new();
+
+    __vec_exp(vec, ref result, 0_usize);
+
+    return result;
+}
+
+fn __vec_exp(vec: @Array::<i33>, ref result: Array::<FixedType>, n: usize) {
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if n == vec.len() {
+        return ();
+    }
+
+    let fp_value = Fixed::new_unscaled(u32_to_u128(*vec.at(n).inner), *vec.at(n).sign);
+
+    let exp = result.append(fp_value.exp());
+
+    __vec_exp(vec, ref result, n + 1_usize)
+}
+
+//=================================================//
+//============== SUM VALUES  IN VECTOR ============//
+//=================================================//
+
+// Calculate the sum of all fixed point values in the input array
+// # Arguments
+// * vec - A reference to an Array of fixed points.
+// # Returns
+// * FixedType - A Fixed Point representing the sum of all fixed point values in the input array.
+fn sum_vec_values_fp(vec: @Array::<FixedType>) -> FixedType {
+    // Initialize variables.
+    let mut sum = Fixed::new_unscaled(0_u128, false);
+
+    __sum_vec_values_fp(vec, ref sum, 0_usize);
+
+    return sum;
+}
+
+fn __sum_vec_values_fp(vec: @Array::<FixedType>, ref sum: FixedType, n: usize) {
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if n == vec.len() {
+        return ();
+    }
+
+    sum += *vec.at(n);
+
+    __sum_vec_values_fp(vec, ref sum, n + 1_usize);
 }
