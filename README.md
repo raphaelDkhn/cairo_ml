@@ -10,9 +10,6 @@ The calculations are performed using `i33` values, and the outcomes are quantize
 
 Follow the [**`auditless/cairo-template`**](https://github.com/auditless/cairo-template) instructions.
 
-## Cairo Version
-- [Cairo](https://github.com/starkware-libs/cairo/releases/tag/v1.0.0-alpha.6) v1.0.0-alpha.6
-
 ## How to use it?
 
 ### Build
@@ -68,6 +65,7 @@ $ make test
 
 ## Credits
 - Zacharie Cohen, for his help.
+- [cubit](https://github.com/influenceth/cubit) for the fixed point lib.
 - [circomlib-ml](https://github.com/socathie/circomlib-ml) for the inspiration.
 - [GuiltyGyoza](https://github.com/guiltygyoza/tiny-dnn-on-starknet) for the inspiration.
 - [Franalgaba](https://github.com/franalgaba/neural-network-cairo/tree/main/src) for the inspiration.
