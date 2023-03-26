@@ -33,6 +33,7 @@ $ make test
 ### Layers
 - [x] Linear
 - [x] Conv2d
+- [x] MaxPool2d
 
 ### Activations
 - [x] ReLu
