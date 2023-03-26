@@ -53,7 +53,7 @@ fn symetric_quant(min_val: i33, max_val: i33, data: i33) -> i33 {
 fn quant_vec(ref vec: Array::<i33>) -> Array::<i33> {
     let mut result = ArrayTrait::new();
 
-    let (mut min_val, mut max_val) = find_min_max(ref vec);
+    let (mut min_val, mut max_val) = find_min_max(@vec);
 
     __quant_vec(ref min_val, ref max_val, ref vec, ref result, 0_usize);
 

@@ -28,13 +28,13 @@ fn valid_correlate_2d_test() {
     let mut kernel = matrix_new(2_usize, 2_usize, kernel_data);
 
     let mut result = valid_correlate_2d(@input, @kernel).data;
-// assert(*result.at(0_usize).inner == 8_u32, 'result[0] == 8');
-// assert(*result.at(0_usize).sign == false, 'result[0] -> positive');
-// assert(*result.at(1_usize).inner == 7_u32, 'result[1] == 7');
-// assert(*result.at(1_usize).sign == false, 'result[1] -> positive');
-// assert(*result.at(2_usize).inner == 4_u32, 'result[2] == 4');
-// assert(*result.at(2_usize).sign == false, 'result[2] -> positive');
-// assert(*result.at(3_usize).inner == 5_u32, 'result[3] == 5');
-// assert(*result.at(3_usize).sign == false, 'result[3] -> positive');
+    assert(*result.at(0_usize).inner == 8_u32, 'result[0] == 8');
+    assert(*result.at(0_usize).sign == false, 'result[0] -> positive');
+    assert(*result.at(1_usize).inner == 7_u32, 'result[1] == 7');
+    assert(*result.at(1_usize).sign == false, 'result[1] -> positive');
+    assert(*result.at(2_usize).inner == 4_u32, 'result[2] == 4');
+    assert(*result.at(2_usize).sign == false, 'result[2] -> positive');
+    assert(*result.at(3_usize).inner == 5_u32, 'result[3] == 5');
+    assert(*result.at(3_usize).sign == false, 'result[3] -> positive');
 }
 
