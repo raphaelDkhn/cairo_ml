@@ -105,17 +105,17 @@ fn __vec_dot_vec(vec1: @Array::<i33>, vec2: @Array::<i33>, index: usize, mut sum
 // * vec - An Array of i33 integers.
 // # Returns
 // * (i33, i33) - A tuple containing the minimum and maximum values found in the input array.
-fn find_min_max(ref vec: Array::<i33>) -> (i33, i33) {
+fn find_min_max(vec: @Array::<i33>) -> (i33, i33) {
     // Initialize variables.
     let mut min_value = i33 { inner: 65535_u32, sign: false };
     let mut max_value = i33 { inner: 65535_u32, sign: true };
 
-    __find_min_max(ref vec, ref min_value, ref max_value, 0_usize, );
+    __find_min_max(vec, ref min_value, ref max_value, 0_usize, );
 
     return (min_value, max_value);
 }
 
-fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33, n: usize, ) {
+fn __find_min_max(vec: @Array::<i33>, ref min_value: i33, ref max_value: i33, n: usize, ) {
     // TODO: Remove when automatically handled by compiler.
     match try_fetch_gas() {
         Option::Some(_) => {},
@@ -144,7 +144,47 @@ fn __find_min_max(ref vec: Array::<i33>, ref min_value: i33, ref max_value: i33,
     }
 
     // --- The process is repeated for the remaining elemets in the array --- 
-    __find_min_max(ref vec, ref min_value, ref max_value, n + 1_usize);
+    __find_min_max(vec, ref min_value, ref max_value, n + 1_usize);
+}
+
+// Finds the maximum value in an Array of i33 integers.
+// # Arguments
+// * vec - An Array of i33 integers.
+// # Returns
+// * i33 - The maximum value found in the input array.
+fn find_max(vec: @Array::<i33>) -> i33 {
+    // Initialize variables.
+    let mut max_value = i33 { inner: 65535_u32, sign: true };
+
+    __find_max(vec, ref max_value, 0_usize, );
+
+    return (max_value);
+}
+
+fn __find_max(vec: @Array::<i33>, ref max_value: i33, n: usize, ) {
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if n == vec.len() {
+        return ();
+    }
+
+    // --- Check the maximum value and update max_value if necessary --- 
+    let check_max = i33_max(max_value, *vec.at(n));
+    if (max_value != check_max) {
+        max_value = check_max;
+    }
+
+    // --- The process is repeated for the remaining elemets in the array --- 
+    __find_max(vec, ref max_value, n + 1_usize);
 }
 
 //=================================================//

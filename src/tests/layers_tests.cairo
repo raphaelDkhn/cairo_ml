@@ -1,6 +1,7 @@
 use array::ArrayTrait;
 use cairo_ml::layers::linear::linear;
 use cairo_ml::layers::conv2d::conv2d;
+use cairo_ml::layers::max_pool_2d::max_pool_2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::signed_integers::i33;
@@ -87,6 +88,21 @@ fn conv2D_test() {
 
     assert(conv.len() == 2_usize, 'conv length = 2');
 }
+
+#[test]
+#[available_gas(2000000)]
+fn max_pool_2d_test() {
+    let kernel_size = (2_usize, 2_usize);
+
+    let mut result = max_pool_2d(@input_helper(), kernel_size).data;
+
+    assert(*result.at(0_usize).inner == 6_u32, 'result[0] == 6');
+    assert(*result.at(1_usize).inner == 6_u32, 'result[1] == 6');
+    assert(*result.at(2_usize).inner == 7_u32, 'result[2] == 7');
+    assert(*result.at(3_usize).inner == 4_u32, 'result[3] == 4');
+    assert(*result.at(3_usize).inner == 4_u32, 'result[3] == 4');
+}
+
 
 fn input_helper() -> Matrix {
     let mut matrix_data = ArrayTrait::new();
