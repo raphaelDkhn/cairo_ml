@@ -1,10 +1,10 @@
 use array::ArrayTrait;
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::vector::sum_two_vec;
+use cairo_ml::math::vector::add_scalar_to_vec;
 use cairo_ml::math::signal::valid_correlate_2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
-
 
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
@@ -17,7 +17,7 @@ impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
 // # Returns
 // * Array::<Matrix> - The result of applying the 2D convolution to the input feature maps.
 fn conv2d(
-    inputs: @Array::<Matrix>, kernels: @Array::<Array::<Matrix>>, biases: @Array::<Matrix>
+    inputs: @Array::<Matrix>, kernels: @Array::<Array::<Matrix>>, biases: @Array::<i33>
 ) -> Array::<Matrix> {
     //Initialize variables
     let mut outputs = ArrayTrait::new();
@@ -30,7 +30,7 @@ fn conv2d(
 fn __conv2d(
     inputs: @Array::<Matrix>,
     kernels: @Array::<Array::<Matrix>>,
-    biases: @Array::<Matrix>,
+    biases: @Array::<i33>,
     ref outputs: Array::<Matrix>,
     n: usize,
 ) {
@@ -54,7 +54,7 @@ fn __conv2d(
 
     // --- Perform conv2d by kernel and append to the outputs ---
     conv2d_by_kernel(
-        inputs, kernels.at(n), biases.at(n), ref acc_correlation, ref output_n, 0_usize
+        inputs, kernels.at(n), *biases.at(n), ref acc_correlation, ref output_n, 0_usize
     );
 
     outputs.append(output_n);
@@ -65,7 +65,7 @@ fn __conv2d(
 fn conv2d_by_kernel(
     inputs: @Array::<Matrix>,
     kernel: @Array::<Matrix>,
-    bias: @Matrix,
+    bias: i33,
     ref acc_correlation: Array::<i33>,
     ref output: Matrix,
     n: usize
@@ -92,9 +92,13 @@ fn conv2d_by_kernel(
 
         if n == kernel.len()
             - 1_usize {
-                // --- Sum bias ---
-                let sum = sum_two_vec(@acc_correlation, bias.data);
-                output = matrix_new(rows: *bias.rows, cols: *bias.cols, data: sum);
+                // --- Add bias ---
+                let sum = add_scalar_to_vec(@acc_correlation, bias);
+
+                output =
+                    matrix_new(
+                        rows: *kernel.at(0_usize).rows, cols: *kernel.at(0_usize).cols, data: sum
+                    );
             }
     } else {
         acc_correlation = correlation.data;
