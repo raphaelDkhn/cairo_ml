@@ -339,3 +339,45 @@ fn __sum_vec_values_fp(vec: @Array::<FixedType>, ref sum: FixedType, n: usize) {
 
     __sum_vec_values_fp(vec, ref sum, n + 1_usize);
 }
+
+//=================================================//
+//============= ADD SCALAR TO VECTOR ==============//
+//=================================================//
+
+// Add a scalar to each values of a vector.
+// # Arguments
+// * vec - The vector.
+// * scalar - The scalar.
+// # Returns
+// * Array<i33> - The resulting vector.
+fn add_scalar_to_vec(vec: @Array::<i33>, scalar: i33) -> Array::<i33> {
+    // Initialize variables.
+    let mut result = ArrayTrait::new();
+
+    __add_scalar_to_vec(vec, scalar, ref result, 0_usize);
+
+    return result;
+}
+
+fn __add_scalar_to_vec(vec: @Array::<i33>, scalar: i33, ref result: Array::<i33>, n: usize, ) {
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if n == vec.len() {
+        return ();
+    }
+
+    // --- Add scalar and assign the result to the current index ---
+    result.append(*vec.at(n) + scalar);
+
+    // --- The process is repeated for the remaining elemets in the array --- 
+    __add_scalar_to_vec(vec, scalar, ref result, n + 1_usize);
+}

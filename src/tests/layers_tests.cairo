@@ -61,9 +61,7 @@ fn conv2D_test() {
     kernels.append(kernel_2);
 
     //Intiate biases
-    let mut biases = ArrayTrait::new();
-    biases.append(bias_helper());
-    biases.append(bias_helper());
+    let mut biases = bias_helper();
 
     let conv = conv2d(@inputs, @kernels, @biases);
     let inner1 = conv.at(0_usize).data.at(0_usize).inner;
@@ -72,19 +70,19 @@ fn conv2D_test() {
     let inner4 = conv.at(0_usize).data.at(3_usize).inner;
 
     assert(*inner1 == 25_u32, 'result[0] == 25');
-    assert(*inner2 == 23_u32, 'result[0] == 23');
-    assert(*inner3 == 9_u32, 'result[0] == 9');
-    assert(*inner4 == 19_u32, 'result[0] == 19');
+    assert(*inner2 == 22_u32, 'result[1] == 22');
+    assert(*inner3 == 13_u32, 'result[2] == 13');
+    assert(*inner4 == 16_u32, 'result[3] == 16');
 
     let inner1 = conv.at(1_usize).data.at(0_usize).inner;
     let inner2 = conv.at(1_usize).data.at(1_usize).inner;
     let inner3 = conv.at(1_usize).data.at(2_usize).inner;
     let inner4 = conv.at(1_usize).data.at(3_usize).inner;
 
-    assert(*inner1 == 25_u32, 'result[0] == 25');
+    assert(*inner1 == 26_u32, 'result[0] == 26');
     assert(*inner2 == 23_u32, 'result[0] == 23');
-    assert(*inner3 == 9_u32, 'result[0] == 9');
-    assert(*inner4 == 19_u32, 'result[0] == 19');
+    assert(*inner3 == 14_u32, 'result[0] == 14');
+    assert(*inner4 == 17_u32, 'result[0] == 17');
 
     assert(conv.len() == 2_usize, 'conv length = 2');
 }
@@ -127,12 +125,10 @@ fn kernel_helper() -> Matrix {
     matrix_new(2_usize, 2_usize, matrix_data)
 }
 
-fn bias_helper() -> Matrix {
-    let mut matrix_data = ArrayTrait::new();
-    matrix_data.append(i33 { inner: 1_u32, sign: false });
-    matrix_data.append(i33 { inner: 2_u32, sign: false });
-    matrix_data.append(i33 { inner: 3_u32, sign: true });
-    matrix_data.append(i33 { inner: 4_u32, sign: false });
-    matrix_new(2_usize, 2_usize, matrix_data)
+fn bias_helper() -> Array::<i33> {
+    let mut bias = ArrayTrait::new();
+    bias.append(i33 { inner: 1_u32, sign: false });
+    bias.append(i33 { inner: 2_u32, sign: false });
+    bias
 }
 
