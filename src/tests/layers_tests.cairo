@@ -32,7 +32,7 @@ fn linear_layer_test() {
     bias.append(i33 { inner: 61_u32, sign: false });
     bias.append(i33 { inner: 71_u32, sign: true });
 
-    let mut result = linear(inputs, @weights, bias);
+    let mut result = linear(@inputs, @weights, @bias);
 
     assert(*result.at(0_usize).inner == 127_u32, 'result[0] == 127');
     assert(*result.at(1_usize).inner == 6_u32, 'result[1] == 6');

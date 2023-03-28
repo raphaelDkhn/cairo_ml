@@ -4,7 +4,7 @@ use traits::Into;
 
 use cairo_ml::math::signed_integers::i33;
 use cairo_ml::math::matrix::matrix_new;
-use cairo_ml::activations::relu::relu;
+use cairo_ml::activations::relu::relu_matrix;
 use cairo_ml::activations::softmax::softmax;
 use cairo_ml::fixed_point::core::ONE_u128;
 use cairo_ml::fixed_point::core::FixedType;
@@ -28,7 +28,7 @@ fn relu_tests() {
     matrix_data.append(val_4);
 
     let matrix = matrix_new(2_usize, 2_usize, matrix_data);
-    let result = relu(@matrix).data;
+    let result = relu_matrix(@matrix).data;
 
     assert(*result.at(0_usize).inner == 1_u32, 'result[0] == 1');
     assert(*result.at(0_usize).sign == false, 'result[0] --> positive');

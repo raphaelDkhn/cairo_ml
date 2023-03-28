@@ -18,7 +18,7 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 // # Panics
 // * If the number of columns in the weights matrix does not match the length of the input vector.
 // * If the number of rows in the weights matrix does not match the length of the bias vector.
-fn linear(inputs: Array::<i33>, weights: @Matrix, bias: Array::<i33>) -> (Array::<i33>) {
+fn linear(inputs: @Array::<i33>, weights: @Matrix, bias: @Array::<i33>) -> (Array::<i33>) {
     // --- Checks ---
     assert(*weights.cols == inputs.len(), 'shape do not match');
     assert(*weights.rows == bias.len(), 'shape do not match');
@@ -27,7 +27,7 @@ fn linear(inputs: Array::<i33>, weights: @Matrix, bias: Array::<i33>) -> (Array:
     let dot_result = matrix_dot_vec(weights, inputs);
 
     // --- Add bias ---
-    let mut result = sum_two_vec(@dot_result, @bias);
+    let mut result = sum_two_vec(@dot_result, bias);
 
     // --- Return quantized result --- 
     return quant_vec(ref result);

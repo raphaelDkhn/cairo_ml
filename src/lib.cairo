@@ -5,3 +5,4 @@ mod layers;
 mod activations;
 mod utils;
 mod fixed_point;
+mod examples;

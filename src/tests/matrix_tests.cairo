@@ -27,7 +27,7 @@ fn dot_test() {
     vec.append(i33 { inner: 63_u32, sign: true });
     vec.append(i33 { inner: 31_u32, sign: false });
 
-    let mut result = matrix_dot_vec(@matrix, vec);
+    let mut result = matrix_dot_vec(@matrix, @vec);
 
     assert(*result.at(0_usize).inner == 1199_u32, 'result[0] == -1199');
     assert(*result.at(0_usize).sign == true, 'result[0] == -1199');
