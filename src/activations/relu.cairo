@@ -46,3 +46,39 @@ fn __relu(matrix: @Matrix, ref result: Array::<i33>, n: usize) {
     __relu(matrix, ref result, n + 1_usize);
 }
 
+
+// Computes a ReLu on multiple matrices.
+// # Arguments
+// * input - A reference to an array of Matrices.
+// # Returns
+// * Array::<Matrix> - The result of the batch ReLu.
+fn batch_relu(inputs: @Array::<Matrix>) -> Array::<Matrix> {
+    // Initialize variables.
+    let mut result = ArrayTrait::new();
+
+    __batch_relu(inputs, ref result, 0_usize);
+
+    return result;
+}
+
+
+fn __batch_relu(inputs: @Array::<Matrix>, ref result: Array::<Matrix>, n: usize) {
+    // TODO: Remove when automatically handled by compiler.
+    match try_fetch_gas() {
+        Option::Some(_) => {},
+        Option::None(_) => {
+            let mut data = array_new::<felt>();
+            array_append::<felt>(ref data, 'OOG');
+            panic(data);
+        },
+    }
+
+    // --- End of the recursion ---
+    if (n == inputs.len()) {
+        return ();
+    }
+
+    result.append(relu(inputs.at(n)));
+
+    __batch_relu(inputs, ref result, n + 1_usize);
+}

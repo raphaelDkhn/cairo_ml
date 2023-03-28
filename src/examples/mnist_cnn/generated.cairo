@@ -6,3 +6,4 @@ mod fc1_bias;
 mod fc1_weight;
 mod fc2_bias;
 mod fc2_weight;
+mod input;

@@ -6,6 +6,9 @@ use cairo_ml::math::signal::valid_correlate_2d;
 use cairo_ml::math::matrix::Matrix;
 use cairo_ml::math::matrix::matrix_new;
 
+use debug::print_felt;
+use traits::Into;
+
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 impl ArrayMatrixDrop of Drop::<Array::<Matrix>>;
 
@@ -23,6 +26,9 @@ fn conv2d(
     let mut outputs = ArrayTrait::new();
 
     __conv2d(inputs, kernels, biases, ref outputs, 0_usize);
+
+    print_felt((outputs.at(0_usize).data.len()).into());
+    print_felt((outputs.at(1_usize).data.len()).into());
 
     return outputs;
 }
@@ -48,13 +54,13 @@ fn __conv2d(
         return ();
     }
 
-    let mut output_n_data = ArrayTrait::new();
+    //let mut output_n_data = ArrayTrait::new();
     let mut acc_correlation = ArrayTrait::new();
-    let mut output_n = matrix_new(0_usize, 0_usize, output_n_data);
+    //let mut output_n = matrix_new(0_usize, 0_usize, output_n_data);
 
     // --- Perform conv2d by kernel and append to the outputs ---
-    conv2d_by_kernel(
-        inputs, kernels.at(n), *biases.at(n), ref acc_correlation, ref output_n, 0_usize
+    let output_n = conv2d_by_kernel(
+        inputs, kernels.at(n), *biases.at(n), ref acc_correlation, 0_usize
     );
 
     outputs.append(output_n);
@@ -67,9 +73,8 @@ fn conv2d_by_kernel(
     kernel: @Array::<Matrix>,
     bias: i33,
     ref acc_correlation: Array::<i33>,
-    ref output: Matrix,
     n: usize
-) {
+) -> Matrix {
     // TODO: Remove when automatically handled by compiler.
     match try_fetch_gas() {
         Option::Some(_) => {},
@@ -82,7 +87,9 @@ fn conv2d_by_kernel(
 
     // --- End of the recursion ---
     if n == kernel.len() {
-        return ();
+        return matrix_new(
+            rows: *kernel.at(0_usize).rows, cols: *kernel.at(0_usize).cols, data: acc_correlation
+        );
     }
 
     let correlation = valid_correlate_2d(inputs.at(n), kernel.at(n));
@@ -93,16 +100,11 @@ fn conv2d_by_kernel(
         if n == kernel.len()
             - 1_usize {
                 // --- Add bias ---
-                let sum = add_scalar_to_vec(@acc_correlation, bias);
-
-                output =
-                    matrix_new(
-                        rows: *kernel.at(0_usize).rows, cols: *kernel.at(0_usize).cols, data: sum
-                    );
+                acc_correlation = add_scalar_to_vec(@acc_correlation, bias);
             }
     } else {
         acc_correlation = correlation.data;
     }
 
-    conv2d_by_kernel(inputs, kernel, bias, ref acc_correlation, ref output, n + 1_usize);
+    return conv2d_by_kernel(inputs, kernel, bias, ref acc_correlation, n + 1_usize);
 }

@@ -5,7 +5,6 @@ use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::vector::vec_dot_vec;
 
-
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 // =================================================//
@@ -23,12 +22,11 @@ impl Arrayi33Drop of Drop::<Array::<i33>>;
 fn valid_correlate_2d(input: @Matrix, kernel: @Matrix) -> Matrix {
     // Initialize variables.
     let mut output_data = ArrayTrait::new();
-    let max_index = 0_usize + (*kernel.rows * *input.cols) + *kernel.cols - 2_usize;
-
-    __valid_correlate_2d(input, kernel, ref output_data, 0_usize, max_index);
 
     let output_rows = *input.rows - *kernel.rows + 1_usize;
     let output_cols = *input.cols - *kernel.cols + 1_usize;
+
+    __valid_correlate_2d(input, kernel, ref output_data, 0_usize, output_rows * output_cols);
 
     assert(output_data.len() == output_rows * output_cols, 'wrong output shape');
 
@@ -36,7 +34,7 @@ fn valid_correlate_2d(input: @Matrix, kernel: @Matrix) -> Matrix {
 }
 
 fn __valid_correlate_2d(
-    input: @Matrix, kernel: @Matrix, ref output_data: Array::<i33>, n: usize, max_index: usize
+    input: @Matrix, kernel: @Matrix, ref output_data: Array::<i33>, n: usize, max_len: usize
 ) {
     // TODO: Remove when automatically handled by compiler.
     match try_fetch_gas() {
@@ -50,7 +48,7 @@ fn __valid_correlate_2d(
 
     let col_index = n % *input.cols;
     // --- End of the recursion ---
-    if (n >= max_index) {
+    if (output_data.len() > max_len - 1_usize) {
         return ();
     }
     // --- Slice Input ---
@@ -65,8 +63,8 @@ fn __valid_correlate_2d(
     let col_index = n % *input.cols;
     if (col_index == *input.cols
         - *kernel.cols) {
-            __valid_correlate_2d(input, kernel, ref output_data, n + *kernel.cols, max_index);
+            __valid_correlate_2d(input, kernel, ref output_data, n + *kernel.cols, max_len);
         } else {
-            __valid_correlate_2d(input, kernel, ref output_data, n + 1_usize, max_index);
+            __valid_correlate_2d(input, kernel, ref output_data, n + 1_usize, max_len);
         }
 }
