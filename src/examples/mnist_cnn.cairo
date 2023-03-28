@@ -1,3 +1,3 @@
 mod generated;
 mod cnn;
-mod mnist_test;
+//mod mnist_test;

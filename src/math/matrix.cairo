@@ -41,18 +41,17 @@ fn matrix_new(rows: usize, cols: usize, data: Array::<i33>) -> Matrix {
 // * Array::<i33> - The result of multiplying the matrix by the vector.
 // # Panics
 // * If the number of columns in the matrix does not match the length of the input vector.
-fn matrix_dot_vec(matrix: @Matrix, vector: Array::<i33>) -> (Array::<i33>) {
+fn matrix_dot_vec(matrix: @Matrix, vector: @Array::<i33>) -> (Array::<i33>) {
     // Initialize variables.
-    let mut _vector = vector;
     let mut result_vec = ArrayTrait::new();
 
-    __matrix_dot_vec(matrix, ref _vector, ref result_vec, 0_usize);
+    __matrix_dot_vec(matrix, vector, ref result_vec, 0_usize);
 
     return result_vec;
 }
 
 fn __matrix_dot_vec(
-    matrix: @Matrix, ref vector: Array::<i33>, ref result: Array::<i33>, row: usize
+    matrix: @Matrix, vector: @Array::<i33>, ref result: Array::<i33>, row: usize
 ) {
     // TODO: Remove when automatically handled by compiler.
     match try_fetch_gas() {
@@ -70,16 +69,16 @@ fn __matrix_dot_vec(
     }
 
     // --- Compute dot product of the row ---
-    let dot = row_dot_vec(matrix, ref vector, row, 0_usize);
+    let dot = row_dot_vec(matrix, vector, row, 0_usize);
 
     // --- Append the dot product to the result_vec ---
     result.append(dot);
 
     // --- The process is repeated for the remaining rows in the matrix_shape --- 
-    __matrix_dot_vec(matrix, ref vector, ref result, row + 1_usize);
+    __matrix_dot_vec(matrix, vector, ref result, row + 1_usize);
 }
 
-fn row_dot_vec(matrix: @Matrix, ref vector: Array::<i33>, row: usize, current_col: usize) -> i33 {
+fn row_dot_vec(matrix: @Matrix, vector: @Array::<i33>, row: usize, current_col: usize) -> i33 {
     // TODO: Remove when automatically handled by compiler.
     match try_fetch_gas() {
         Option::Some(_) => {},
@@ -99,7 +98,7 @@ fn row_dot_vec(matrix: @Matrix, ref vector: Array::<i33>, row: usize, current_co
     let ele = *matrix.data.at(*matrix.cols * row + current_col);
     let result = ele * (*vector.at(current_col));
 
-    let acc = row_dot_vec(matrix, ref vector, row, current_col + 1_usize);
+    let acc = row_dot_vec(matrix, vector, row, current_col + 1_usize);
 
     // --- Returns the sum of the current product with the previous ones ---
     return acc + result;

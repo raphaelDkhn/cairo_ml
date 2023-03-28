@@ -5,9 +5,6 @@ use cairo_ml::math::matrix::matrix_new;
 use cairo_ml::math::matrix::slice_matrix;
 use cairo_ml::math::vector::find_max;
 
-use debug::print_felt;
-use traits::Into;
-
 impl Arrayi33Drop of Drop::<Array::<i33>>;
 
 // =================================================//
@@ -27,13 +24,8 @@ fn max_pool_2d(input: @Matrix, kernel_size: (usize, usize)) -> Matrix {
     let mut output_data = ArrayTrait::new();
     let (kernel_rows, kernel_cols) = kernel_size;
 
-   // print_felt((*input.rows).into());
-   // print_felt((kernel_rows).into());
-
     let output_rows = *input.rows - kernel_rows + 1_usize;
-    print_felt(555);
     let output_cols = *input.cols - kernel_cols + 1_usize;
-    print_felt(999);
 
     __max_pool_2d(
         input, kernel_rows, kernel_cols, ref output_data, 0_usize, output_rows * output_cols
