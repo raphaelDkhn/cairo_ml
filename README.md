@@ -1,9 +1,5 @@
 # Explore ML in Cairo 1.0 ![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg)
 
-Build neural network models in Cairo 1.0 to perform inference.
-
----
-
 This repo is archived. And most of the code has been implemented in the [ONNX-Cairo project](https://github.com/franalgaba/onnx-cairo).
 
 ## Credits
